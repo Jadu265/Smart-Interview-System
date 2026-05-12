@@ -1,0 +1,23 @@
+{
+  "name": "smart-interview-system",
+  "version": "1.0.0",
+  "description": "A fully functional, modern interview practice platform built for BUBT SDP4 project.",
+  "scripts": {
+    "build:css": "npx tailwindcss -i src/input.css -o style.css",
+    "watch:css": "npx tailwindcss -i src/input.css -o style.css --watch",
+    "backend:install": "cd backend-laravel && composer install",
+    "backend:dev": "cd backend-laravel && composer run api",
+    "backend:start": "cd backend-laravel && composer run api",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^3.4.17"
+  }
+}
+

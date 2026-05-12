@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Interview Practice | Master Your Future</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+</head>
+<body class="c285" id="home">
+<!-- Top Navigation Bar -->
+<header class="c286">
+<div class="c287">
+<div class="c17">
+<div class="c288">
+<span class="c289 material-symbols-outlined">psychology</span>
+</div>
+<h1 class="c290">Smart Interview System</h1>
+</div>
+<nav class="c291 hidden">
+<a class="c292" href="auth_interview_setup.html">Practice</a>
+<a class="c292" href="#pricing">Pricing</a>
+<a class="c292" href="#resources">Resources</a>
+</nav>
+<div id="authActions" class="c17">
+<button onclick="openLoginModal()" class="c293">Login</button>
+<button onclick="window.location.href='auth_signup.html'" class="c294">
+                    Register
+                </button>
+</div>
+<div id="userHeaderInfo" class="landing-user-info" style="display:none;" onclick="window.location.href='auth_dashboard.html'">
+<img id="headerUserAvatarImage" class="landing-user-avatar" alt="User avatar" style="display:none;" />
+<span id="headerUserAvatarInitial" class="landing-user-avatar">U</span>
+<span id="headerUserName" class="landing-user-name">User</span>
+</div>
+</div>
+</header>
+<main class="c295">
+<!-- Hero Section -->
+<section class="c296">
+<div class="c297">
+<h1 class="c299">
+                    Master Your Next <span class="c226">Interview</span> with AI
+                </h1>
+<p class="c300">
+                    Personalized practice sessions for Technical, HR, and Behavioral rounds with real-time feedback. Join 10,000+ candidates today.
+                </p>
+<div class="c301">
+<button onclick="startPracticeFlow()" class="c302">
+                        Start Practicing Now
+                    </button>
+<button onclick="window.location.href='auth_dashboard.html?demo=true'" class="c303">
+                        View Demo
+                    </button>
+</div>
+</div>
+<div class="c304 group">
+<div class="c305"></div>
+<div class="c306 hero-image" data-alt="UI dashboard showing AI interview feedback metrics">
+<div class="hero-slider" id="heroSlider">
+<div class="hero-slide is-active" data-slide="0">
+<img src="src/slide1.png" alt="Practice mock interviews" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuAJUYITt-Yq1t1I0JXCy6-ztP5Nrp8awsCfLfcN1xz07xrcPKjDUPA13UtBwRcyqEJVjwKBtK2oZJyjEpzN5CeM0gGfz-yMLCMixteGg-wX6-LxADFpMN5UmQowuFa3WwdwsUpnVwravID7lChITHaFsVBC5gwY9RJpreKUdm8NA0v0lNv697K4HdqXv34auo37IbOrXkm1ucKmtTSGLrxFapBygBqqNtahI6a7HVgF3NFza0P7XDfcad2TubMojH1C67yW2Wknu9N7';" />
+</div>
+<div class="hero-slide" data-slide="1">
+<img src="src/slide2.png" alt="Track your progress" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuAJUYITt-Yq1t1I0JXCy6-ztP5Nrp8awsCfLfcN1xz07xrcPKjDUPA13UtBwRcyqEJVjwKBtK2oZJyjEpzN5CeM0gGfz-yMLCMixteGg-wX6-LxADFpMN5UmQowuFa3WwdwsUpnVwravID7lChITHaFsVBC5gwY9RJpreKUdm8NA0v0lNv697K4HdqXv34auo37IbOrXkm1ucKmtTSGLrxFapBygBqqNtahI6a7HVgF3NFza0P7XDfcad2TubMojH1C67yW2Wknu9N7';" />
+</div>
+<div class="hero-slide" data-slide="2">
+<img src="src/slide3.png" alt="Get instant feedback" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuAJUYITt-Yq1t1I0JXCy6-ztP5Nrp8awsCfLfcN1xz07xrcPKjDUPA13UtBwRcyqEJVjwKBtK2oZJyjEpzN5CeM0gGfz-yMLCMixteGg-wX6-LxADFpMN5UmQowuFa3WwdwsUpnVwravID7lChITHaFsVBC5gwY9RJpreKUdm8NA0v0lNv697K4HdqXv34auo37IbOrXkm1ucKmtTSGLrxFapBygBqqNtahI6a7HVgF3NFza0P7XDfcad2TubMojH1C67yW2Wknu9N7';" />
+</div>
+</div>
+<div class="hero-slider-dots" id="heroSliderDots" aria-label="Hero slides">
+<button type="button" class="hero-slider-dot is-active" data-target="0" aria-label="Slide 1"></button>
+<button type="button" class="hero-slider-dot" data-target="1" aria-label="Slide 2"></button>
+<button type="button" class="hero-slider-dot" data-target="2" aria-label="Slide 3"></button>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="c312">
+<div class="c313">
+<p class="c314">Active Candidates</p>
+<p class="c315">10,000+</p>
+</div>
+<div class="c313">
+<p class="c314">Success Rate</p>
+<p class="c316">94%</p>
+</div>
+<div class="c313">
+<p class="c314">Practice Questions</p>
+<p class="c315">5,000+</p>
+</div>
+<div class="c313">
+<p class="c314">Mock Interviews</p>
+<p class="c315">250k+</p>
+</div>
+</section>
+<!-- Feature Categories -->
+<section id="modules" class="c317">
+<div class="c318">
+<div class="c319">
+<h2 class="c320">Trial Interview Modules</h2>
+<p class="c321">Choose from specialized tracks designed by industry experts and updated for 2024 standards.</p>
+</div>
+<button onclick="window.location.href='auth_interview_setup.html'" class="c322">
+                    View all modules <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="c323">
+<!-- Technical -->
+<div class="c324 group">
+<div class="c325">
+<span class="c326 material-symbols-outlined">code</span>
+</div>
+<h3 class="c327">Technical Rounds</h3>
+<p class="c328">
+                        Master Data Structures, Algorithms, System Design, and logic puzzles with our interactive IDE.
+                    </p>
+<ul class="c329">
+<li class="c330">
+<span class="c331 material-symbols-outlined">done</span> Live Code Execution
+                        </li>
+<li class="c330">
+<span class="c331 material-symbols-outlined">done</span> Whiteboard Simulation
+                        </li>
+</ul>
+<a class="c332" href="auth_interview_setup.html?module=technical" onclick="event.preventDefault(); window.location.href='auth_interview_setup.html?module=technical'">
+                        Explore <span class="c23 material-symbols-outlined">chevron_right</span>
+</a>
+</div>
+<!-- HR -->
+<div class="c333 group">
+<div class="c334">
+<span class="c326 material-symbols-outlined">groups</span>
+</div>
+<h3 class="c327">HR &amp; Culture</h3>
+<p class="c328">
+                        Learn how to communicate your strengths, handle salary negotiations, and ensure a perfect culture fit.
+                    </p>
+<ul class="c329">
+<li class="c330">
+<span class="c335 material-symbols-outlined">done</span> Negotiation Tactics
+                        </li>
+<li class="c330">
+<span class="c335 material-symbols-outlined">done</span> Confidence Building
+                        </li>
+</ul>
+<a class="c336" href="auth_interview_setup.html?module=hr" onclick="event.preventDefault(); window.location.href='auth_interview_setup.html?module=hr'">
+                        Explore <span class="c23 material-symbols-outlined">chevron_right</span>
+</a>
+</div>
+<!-- Behavioral -->
+<div class="c333 group">
+<div class="c337">
+<span class="c326 material-symbols-outlined">forum</span>
+</div>
+<h3 class="c327">Behavioral Questions</h3>
+<p class="c328">
+                        Master the STAR method for situational questions. Get AI feedback on your tone and story structure.
+                    </p>
+<ul class="c329">
+<li class="c330">
+<span class="c338 material-symbols-outlined">done</span> STAR Method Coach
+                        </li>
+<li class="c330">
+<span class="c338 material-symbols-outlined">done</span> Sentiment Analysis
+                        </li>
+</ul>
+<a class="c339" href="auth_interview_setup.html?module=behavioral" onclick="event.preventDefault(); window.location.href='auth_interview_setup.html?module=behavioral'">
+                        Explore <span class="c23 material-symbols-outlined">chevron_right</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Trending Roles -->
+<section id="roles" class="c317">
+<h2 class="c340">
+<span class="c226 material-symbols-outlined">trending_up</span>
+                Trending Roles
+            </h2>
+<div class="c341">
+<div class="c342" onclick="window.location.href='auth_interview_setup.html?role=developer'" style="cursor:pointer;">
+<span class="c343 material-symbols-outlined">terminal</span>
+<h4 class="c344">Software Developer</h4>
+<p class="c345">420 Questions</p>
+<div class="c346">
+<div class="c347">
+<div class="c348"></div>
+<div class="c349"></div>
+</div>
+<span class="c27 material-symbols-outlined">arrow_forward_ios</span>
+</div>
+</div>
+<div class="c342" onclick="window.location.href='auth_interview_setup.html?role=marketing'" style="cursor:pointer;">
+<span class="c343 material-symbols-outlined">analytics</span>
+<h4 class="c344">Marketing Manager</h4>
+<p class="c345">180 Questions</p>
+<div class="c346">
+<div class="c347">
+<div class="c350"></div>
+</div>
+<span class="c27 material-symbols-outlined">arrow_forward_ios</span>
+</div>
+</div>
+<div class="c342" onclick="window.location.href='auth_interview_setup.html?role=product'" style="cursor:pointer;">
+<span class="c343 material-symbols-outlined">inventory_2</span>
+<h4 class="c344">Product Manager</h4>
+<p class="c345">315 Questions</p>
+<div class="c346">
+<div class="c347">
+<div class="c351"></div>
+</div>
+<span class="c27 material-symbols-outlined">arrow_forward_ios</span>
+</div>
+</div>
+<div class="c342" onclick="window.location.href='auth_interview_setup.html?role=analyst'" style="cursor:pointer;">
+<span class="c343 material-symbols-outlined">query_stats</span>
+<h4 class="c344">Data Analyst</h4>
+<p class="c345">260 Questions</p>
+<div class="c346">
+<div class="c347">
+<div class="c352"></div>
+</div>
+<span class="c27 material-symbols-outlined">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section id="pricing" class="c353">
+<div class="c354">
+<div class="c355 hero-orb" data-alt="Abstract blue gradient pattern background"></div>
+<div class="c356">
+<h2 class="c357">
+                        Ready to Land Your Dream Job?
+                    </h2>
+<p class="c358">
+                        Join 10,000+ candidates today and get the edge you need with AI-powered feedback.
+                    </p>
+<div class="c359">
+<button onclick="startPracticeFlow()" class="c360">
+                            Start Practicing for Free
+                        </button>
+<button onclick="openContactModal()" class="c361">
+                            Contact Sales
+                        </button>
+</div>
+<p class="c362">No credit card required. Free tier includes first 10 interviews.</p>
+</div>
+</div>
+<div class="premium-pricing-wrap">
+<div class="premium-pricing-head">
+<p class="premium-pill">Premium Access</p>
+<h3>Start free with 10 interviews, then upgrade anytime</h3>
+<p>Every user gets first <strong>10 interviews free</strong>. After that, choose a flexible plan that matches your pace.</p>
+</div>
+<div class="premium-pricing-grid">
+<article class="premium-pricing-card premium-pricing-card-free">
+<p class="premium-plan-name">Starter</p>
+<p class="premium-plan-price">Free</p>
+<p class="premium-plan-sub">First 10 interviews only</p>
+<ul>
+<li>10 mock interviews included</li>
+<li>Role-based question sets</li>
+<li>Basic AI feedback</li>
+</ul>
+<button class="premium-plan-btn premium-plan-btn-muted" onclick="startPracticeFlow()">Use Free Tier</button>
+</article>
+
+<article class="premium-pricing-card premium-pricing-card-featured">
+<p class="premium-plan-tag">Most Popular</p>
+<p class="premium-plan-name">Monthly Pro</p>
+<p class="premium-plan-price">?300<span>/month</span></p>
+<p class="premium-plan-sub">Perfect for ongoing prep</p>
+<ul>
+<li>20 interviews this month</li>
+<li>Priority AI feedback</li>
+<li>Performance trend insights</li>
+</ul>
+<button class="premium-plan-btn" onclick="openPaymentGateway('monthly')">Choose Monthly</button>
+</article>
+
+<article class="premium-pricing-card">
+<p class="premium-plan-name">Yearly Pro</p>
+<p class="premium-plan-price">?2,500<span>/year</span></p>
+<p class="premium-plan-sub">Save more with annual billing</p>
+<ul>
+<li>Unlimited interviews all year</li>
+<li>Advanced score analytics</li>
+<li>Premium support</li>
+</ul>
+<button class="premium-plan-btn" onclick="openPaymentGateway('yearly')">Choose Yearly</button>
+</article>
+
+<article class="premium-pricing-card">
+<p class="premium-plan-name">Unlimited Lifetime</p>
+<p class="premium-plan-price">?5,000<span> one-time</span></p>
+<p class="premium-plan-sub">No renewals, ever</p>
+<ul>
+<li>Unlimited forever</li>
+<li>All upcoming premium modules</li>
+<li>Top-tier support priority</li>
+</ul>
+<button class="premium-plan-btn" onclick="openPaymentGateway('unlimited')">Go Unlimited</button>
+</article>
+</div>
+</div>
+</section>
+
+<!-- Blog Section -->
+<section id="blog" class="c317">
+<div class="c4">
+<h2 class="c320">Interview Blog</h2>
+<p class="c321">Read practical tips from hiring managers and recruiters to improve your interview performance.</p>
+</div>
+<div class="c341">
+<div class="c342" style="cursor:default;">
+<h4 class="c344">How to Answer "Tell Me About Yourself"</h4>
+<p class="c345">Build a strong 60-second introduction with confidence.</p>
+</div>
+<div class="c342" style="cursor:default;">
+<h4 class="c344">Top 20 Technical Mistakes to Avoid</h4>
+<p class="c345">Common errors candidates make in coding and system rounds.</p>
+</div>
+<div class="c342" style="cursor:default;">
+<h4 class="c344">STAR Method in Real Interviews</h4>
+<p class="c345">Use structured storytelling for behavioral questions.</p>
+</div>
+</div>
+</section>
+
+<!-- Help Center Section -->
+<section id="help-center" class="c317">
+<div class="c4">
+<h2 class="c320">Help Center</h2>
+<p class="c321">Need support? Follow these quick actions to resolve common issues fast.</p>
+</div>
+<div class="c341">
+<div class="c342" onclick="window.location.href='auth_signup.html'" style="cursor:pointer;">
+<h4 class="c344">Account Setup</h4>
+<p class="c345">Create account, verify email, and complete profile.</p>
+</div>
+<div class="c342" onclick="window.location.href='auth_interview_setup.html'" style="cursor:pointer;">
+<h4 class="c344">Start Your First Interview</h4>
+<p class="c345">Choose role, difficulty, and begin your first session.</p>
+</div>
+<div class="c342" onclick="openContactModal()" style="cursor:pointer;">
+<h4 class="c344">Contact Support</h4>
+<p class="c345">Send a message to our support and sales team.</p>
+</div>
+</div>
+</section>
+
+<!-- Community Section -->
+<section id="community" class="c317">
+<div class="c4">
+<h2 class="c320">Community</h2>
+<p class="c321">Join the candidate community to exchange preparation strategies and interview experiences.</p>
+</div>
+<div class="c141">
+<p class="c32">Share your progress, ask questions, and learn from real interview journeys across different roles.</p>
+<div class="c359" style="margin-top:14px;">
+<button onclick="startPracticeFlow()" class="c360">Join Community</button>
+<button onclick="window.location.href='auth_history.html'" class="c361">View Success Stories</button>
+</div>
+</div>
+</section>
+
+<!-- Legal Sections -->
+<section id="privacy" class="c317">
+<div class="c4">
+<h2 class="c320">Privacy Policy</h2>
+<p class="c321">We collect only the minimum data needed for authentication, interview tracking, and product improvement.</p>
+<p class="c32">Personal data is used for account access, interview analytics, and feature enhancement. You can request account and data removal through Contact Sales.</p>
+</div>
+</section>
+
+<section id="terms" class="c317">
+<div class="c4">
+<h2 class="c320">Terms of Service</h2>
+<p class="c321">By using Smart Interview System, you agree to use the platform responsibly and provide accurate account information.</p>
+<p class="c32">Abuse, unauthorized access attempts, and harmful activity may result in account suspension.</p>
+</div>
+</section>
+
+<section id="security" class="c317">
+<div class="c4">
+<h2 class="c320">Security</h2>
+<p class="c321">We use authenticated access controls and monitored backend endpoints to protect user data.</p>
+<p class="c32">For any security concern or suspected vulnerability, contact us immediately via the Contact Sales form.</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer id="resources" class="c363">
+<div class="c364">
+<div class="c365">
+<div class="c366">
+<div class="c288">
+<span class="c289 material-symbols-outlined">psychology</span>
+</div>
+<h1 class="c290">Smart Interview System</h1>
+</div>
+<p class="c367">
+                    The world's most advanced AI platform for job interview preparation and career coaching.
+                </p>
+<div class="c52">
+<a class="c368" href="#home">
+<span class="c369 material-symbols-outlined">public</span>
+</a>
+<a class="c368" href="#" onclick="event.preventDefault(); if (navigator.share) { navigator.share({ title: 'Smart Interview System', url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); alert('Page link copied to clipboard'); }">
+<span class="c369 material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="c370">Platform</h5>
+<ul class="c371">
+<li><a class="c372" href="auth_interview_setup.html">Practice</a></li>
+<li><a class="c372" href="auth_history.html">AI Feedback</a></li>
+<li><a class="c372" href="#roles">Job Tracks</a></li>
+<li><a class="c372" href="#pricing">Pricing</a></li>
+</ul>
+</div>
+<div>
+<h5 class="c370">Resources</h5>
+<ul class="c371">
+<li><a class="c372" href="#blog">Blog</a></li>
+<li><a class="c372" href="#help-center">Help Center</a></li>
+<li><a class="c372" href="#community">Community</a></li>
+<li><a class="c372" href="auth_interview_setup.html?module=behavioral">STAR Method</a></li>
+</ul>
+</div>
+<div>
+<h5 class="c370">Legal</h5>
+<ul class="c371">
+<li><a class="c372" href="#privacy">Privacy</a></li>
+<li><a class="c372" href="#terms">Terms</a></li>
+<li><a class="c372" href="#security">Security</a></li>
+</ul>
+</div>
+</div>
+<div class="c373">
+<p>© 2026 InterviewSmart AI Inc. All rights reserved.</p>
+<div class="c172">
+<a class="c374" href="#privacy">Cookie Policy</a>
+<a class="c374" href="#help-center">Accessibility</a>
+</div>
+</div>
+</footer>
+
+    <!-- Contact Sales Modal -->
+    <div id="contactModal" class="modal-overlay" onclick="closeContactModal(event)">
+        <div class="c375 modal-content" onclick="event.stopPropagation()">
+            <div class="c376">
+                <h2 class="c377">Contact Sales</h2>
+                <button onclick="closeContactModal()" class="c378">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="c124" style="padding: 20px;">
+                <div style="display:flex; flex-direction:column; gap:15px;">
+                    <div>
+                        <label style="display:block; margin-bottom:5px; color:#9ca3af;">Name</label>
+                        <input type="text" id="contactName" placeholder="Your full name" style="width:100%; padding:10px; border:1px solid #374151; border-radius:6px; background:#1f2937; color:#fff;" />
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:5px; color:#9ca3af;">Email</label>
+                        <input type="email" id="contactEmail" placeholder="your@email.com" style="width:100%; padding:10px; border:1px solid #374151; border-radius:6px; background:#1f2937; color:#fff;" />
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:5px; color:#9ca3af;">Company</label>
+                        <input type="text" id="contactCompany" placeholder="Your company (optional)" style="width:100%; padding:10px; border:1px solid #374151; border-radius:6px; background:#1f2937; color:#fff;" />
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:5px; color:#9ca3af;">Message</label>
+                        <textarea id="contactMessage" placeholder="Tell us about your requirements..." style="width:100%; padding:10px; border:1px solid #374151; border-radius:6px; background:#1f2937; color:#fff; height:120px; resize:none;"></textarea>
+                    </div>
+                    <button id="contactSubmitBtn" onclick="submitContactForm()" style="padding:12px; background:#3b82f6; color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; width:100%;">
+                        Send Message
+                    </button>
+                    <p id="contactStatus" style="margin:0; color:#93c5fd; font-size:14px;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Gateway Modal -->
+    <div id="paymentGatewayModal" class="modal-overlay" onclick="closePaymentGateway(event)">
+        <div class="c375 modal-content premium-payment-modal" onclick="event.stopPropagation()">
+            <div class="c376">
+                <h2 class="c377">Secure Checkout</h2>
+                <button onclick="closePaymentGateway()" class="c378">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="premium-payment-summary">
+                <p class="premium-payment-plan" id="paymentPlanName">Monthly Pro</p>
+                <p class="premium-payment-amount" id="paymentPlanAmount">?300/month</p>
+                <p class="premium-payment-note">Your first 10 interviews stay free. Billing starts only after upgrade.</p>
+            </div>
+
+            <div class="premium-payment-form">
+                <div>
+                    <label>Payment Method</label>
+                    <div class="premium-payment-methods">
+                        <button type="button" id="methodCard" class="premium-method-btn premium-method-btn-active" onclick="selectPaymentMethod('card')">Card</button>
+                        <button type="button" id="methodBkash" class="premium-method-btn" onclick="selectPaymentMethod('bkash')">bKash</button>
+                        <button type="button" id="methodNagad" class="premium-method-btn" onclick="selectPaymentMethod('nagad')">Nagad</button>
+                        <button type="button" id="methodRocket" class="premium-method-btn" onclick="selectPaymentMethod('rocket')">Rocket</button>
+                    </div>
+                </div>
+                <div id="cardFieldsWrap">
+                <div>
+                    <label>Card Holder Name</label>
+                    <input type="text" id="payCardHolder" placeholder="Name on card" />
+                </div>
+                <div>
+                    <label>Card Number</label>
+                    <input type="text" id="payCardNumber" placeholder="4242 4242 4242 4242" maxlength="19" />
+                </div>
+                <div class="premium-payment-row">
+                    <div>
+                        <label>Expiry</label>
+                        <input type="text" id="payExpiry" placeholder="MM/YY" maxlength="5" />
+                    </div>
+                    <div>
+                        <label>CVV</label>
+                        <input type="password" id="payCvv" placeholder="123" maxlength="4" />
+                    </div>
+                </div>
+                </div>
+                <div id="mobileBankingFieldsWrap" class="premium-payment-hidden">
+                    <div>
+                        <label>Send Payment To</label>
+                        <div class="premium-mobile-merchant-number">+8801701743760</div>
+                        <p class="premium-mobile-hint">Complete payment to this number, then provide your sender number and transaction ID below.</p>
+                    </div>
+                    <div>
+                        <label>Your Sender Number</label>
+                        <input type="text" id="payMobileNumber" placeholder="+8801XXXXXXXXX or 01XXXXXXXXX" maxlength="14" />
+                    </div>
+                    <div>
+                        <label>Transaction ID</label>
+                        <input type="text" id="payTransactionId" placeholder="e.g. 8F7D3A2B" maxlength="20" />
+                    </div>
+                </div>
+                <div>
+                    <label>Billing Email</label>
+                    <input type="email" id="payEmail" placeholder="you@email.com" />
+                </div>
+                <button id="payNowBtn" onclick="processPaymentGateway()" class="premium-pay-btn">Complete Payment</button>
+                <p id="payStatus" class="premium-pay-status"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay" onclick="closeLoginModal(event)">
+        <div class="c375 modal-content" onclick="event.stopPropagation()">
+            <div class="c376">
+                <h2 class="c377">Choose Login Type</h2>
+                <button onclick="closeLoginModal()" class="c378">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="c124">
+                <!-- User Login Card -->
+                <div onclick="window.location.href='auth_login.html'" class="c379 group">
+                    <div class="c117">
+                        <div class="c380">
+                            <span class="c381 material-symbols-outlined">person</span>
+                        </div>
+                        <div class="c76">
+                            <h3 class="c382">User Login</h3>
+                            <p class="c383">Access your candidate dashboard</p>
+                        </div>
+                        <span class="c384 material-symbols-outlined">arrow_forward</span>
+                    </div>
+                </div>
+                
+                <!-- Admin Login Card -->
+                <div onclick="window.location.href='auth_login.html?admin=true'" class="c385 group">
+                    <div class="c117">
+                        <div class="c386">
+                            <span class="c387 material-symbols-outlined">admin_panel_settings</span>
+                        </div>
+                        <div class="c76">
+                            <h3 class="c382">Admin Login</h3>
+                            <p class="c383">System administration access</p>
+                        </div>
+                        <span class="c388 material-symbols-outlined">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="c389">
+                <p class="c390">
+                    Don't have an account? 
+                    <a href="auth_signup.html" class="c391">Sign Up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const landingFirebaseConfig = {
+            apiKey: "YOUR_NEW_API_KEY_HERE",
+            authDomain: "smartinterview-d2ef2.firebaseapp.com",
+            projectId: "smartinterview-d2ef2",
+            storageBucket: "smartinterview-d2ef2.firebasestorage.app",
+            messagingSenderId: "889760323914",
+            appId: "1:889760323914:web:83b0166175be22c32049b3"
+        };
+
+        let landingAuth = null;
+        let landingDb = null;
+        let selectedPlanKey = 'monthly';
+        let selectedPaymentMethod = 'card';
+        const MOBILE_PAYMENT_RECEIVER = '+8801701743760';
+
+        const PLAN_CATALOG = {
+            monthly: { key: 'monthly', name: 'Monthly Pro', priceLabel: '?300/month', amount: 300, cycle: 'monthly', interviewLimit: 20 },
+            yearly: { key: 'yearly', name: 'Yearly Pro', priceLabel: '?2,500/year', amount: 2500, cycle: 'yearly', interviewLimit: null },
+            unlimited: { key: 'unlimited', name: 'Unlimited Lifetime', priceLabel: '?5,000 one-time', amount: 5000, cycle: 'lifetime', interviewLimit: null }
+        };
+
+        function getLandingAuth() {
+            if (landingAuth) {
+                return landingAuth;
+            }
+
+            if (typeof firebase === 'undefined') {
+                return null;
+            }
+
+            if (!firebase.apps.length) {
+                firebase.initializeApp(landingFirebaseConfig);
+            }
+
+            landingAuth = firebase.auth();
+            return landingAuth;
+        }
+
+        function getLandingDb() {
+            if (landingDb) {
+                return landingDb;
+            }
+
+            const authInstance = getLandingAuth();
+            if (!authInstance) {
+                return null;
+            }
+
+            landingDb = firebase.firestore();
+            return landingDb;
+        }
+
+        function updateLandingHeaderUser(user) {
+            const authActions = document.getElementById('authActions');
+            const userHeaderInfo = document.getElementById('userHeaderInfo');
+            const headerUserName = document.getElementById('headerUserName');
+            const headerUserAvatarImage = document.getElementById('headerUserAvatarImage');
+            const headerUserAvatarInitial = document.getElementById('headerUserAvatarInitial');
+
+            if (!authActions || !userHeaderInfo || !headerUserName || !headerUserAvatarImage || !headerUserAvatarInitial) {
+                return;
+            }
+
+            if (!user) {
+                authActions.style.display = 'flex';
+                userHeaderInfo.style.display = 'none';
+                return;
+            }
+
+            const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+            const initial = (displayName && displayName[0]) ? displayName[0].toUpperCase() : 'U';
+
+            headerUserName.textContent = displayName;
+            headerUserAvatarInitial.textContent = initial;
+
+            if (user.photoURL) {
+                headerUserAvatarImage.src = user.photoURL;
+                headerUserAvatarImage.style.display = 'inline-flex';
+                headerUserAvatarInitial.style.display = 'none';
+            } else {
+                headerUserAvatarImage.removeAttribute('src');
+                headerUserAvatarImage.style.display = 'none';
+                headerUserAvatarInitial.style.display = 'inline-flex';
+            }
+
+            authActions.style.display = 'none';
+            userHeaderInfo.style.display = 'inline-flex';
+        }
+
+        function initLandingHeaderAuthState() {
+            const authInstance = getLandingAuth();
+            if (!authInstance) {
+                return;
+            }
+
+            authInstance.onAuthStateChanged((user) => {
+                updateLandingHeaderUser(user);
+            });
+        }
+
+        function startPracticeFlow() {
+            const authInstance = getLandingAuth();
+            if (!authInstance) {
+                window.location.href = 'auth_signup.html';
+                return;
+            }
+
+            const timeoutId = setTimeout(() => {
+                window.location.href = 'auth_signup.html';
+            }, 2500);
+
+            const unsubscribe = authInstance.onAuthStateChanged((user) => {
+                clearTimeout(timeoutId);
+                unsubscribe();
+
+                if (user) {
+                    window.location.href = 'auth_dashboard.html?fromLanding=true';
+                } else {
+                    window.location.href = 'auth_signup.html';
+                }
+            });
+        }
+
+        initLandingHeaderAuthState();
+
+        function initHeroSlider() {
+            const slider = document.getElementById('heroSlider');
+            const dotsWrap = document.getElementById('heroSliderDots');
+            if (!slider || !dotsWrap) {
+                return;
+            }
+
+            const slides = Array.from(slider.querySelectorAll('.hero-slide'));
+            const dots = Array.from(dotsWrap.querySelectorAll('.hero-slider-dot'));
+            if (!slides.length || slides.length !== dots.length) {
+                return;
+            }
+
+            let currentIndex = 0;
+            let autoplayId = null;
+
+            const activate = (index) => {
+                currentIndex = index;
+                slides.forEach((slide, idx) => {
+                    slide.classList.toggle('is-active', idx === index);
+                });
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('is-active', idx === index);
+                });
+            };
+
+            const goNext = () => {
+                const nextIndex = (currentIndex + 1) % slides.length;
+                activate(nextIndex);
+            };
+
+            const startAutoplay = () => {
+                stopAutoplay();
+                autoplayId = setInterval(goNext, 2000);
+            };
+
+            const stopAutoplay = () => {
+                if (autoplayId) {
+                    clearInterval(autoplayId);
+                    autoplayId = null;
+                }
+            };
+
+            dots.forEach((dot, idx) => {
+                dot.addEventListener('click', () => {
+                    activate(idx);
+                    startAutoplay();
+                });
+            });
+
+            slider.addEventListener('mouseenter', stopAutoplay);
+            slider.addEventListener('mouseleave', startAutoplay);
+
+            activate(0);
+            startAutoplay();
+        }
+
+        initHeroSlider();
+
+        // Login Modal Functions
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLoginModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('loginModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Contact Sales Modal Functions
+        function openContactModal() {
+            document.getElementById('contactModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('contactStatus').textContent = '';
+        }
+
+        function openPaymentGateway(planKey) {
+            const selectedPlan = PLAN_CATALOG[planKey] || PLAN_CATALOG.monthly;
+            selectedPlanKey = selectedPlan.key;
+
+            const authInstance = getLandingAuth();
+            if (!authInstance || !authInstance.currentUser) {
+                openLoginModal();
+                return;
+            }
+
+            document.getElementById('paymentPlanName').textContent = selectedPlan.name;
+            document.getElementById('paymentPlanAmount').textContent = selectedPlan.priceLabel;
+            document.getElementById('payEmail').value = authInstance.currentUser.email || '';
+            document.getElementById('payStatus').textContent = '';
+
+            document.getElementById('paymentGatewayModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePaymentGateway(event) {
+            if (event && event.target !== event.currentTarget) {
+                return;
+            }
+            document.getElementById('paymentGatewayModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function selectPaymentMethod(methodKey) {
+            selectedPaymentMethod = methodKey;
+
+            const methodButtons = {
+                card: document.getElementById('methodCard'),
+                bkash: document.getElementById('methodBkash'),
+                nagad: document.getElementById('methodNagad'),
+                rocket: document.getElementById('methodRocket')
+            };
+
+            Object.keys(methodButtons).forEach((key) => {
+                const button = methodButtons[key];
+                if (!button) {
+                    return;
+                }
+                button.classList.toggle('premium-method-btn-active', key === methodKey);
+            });
+
+            const cardFieldsWrap = document.getElementById('cardFieldsWrap');
+            const mobileBankingFieldsWrap = document.getElementById('mobileBankingFieldsWrap');
+            const useCard = methodKey === 'card';
+
+            if (cardFieldsWrap) {
+                cardFieldsWrap.classList.toggle('premium-payment-hidden', !useCard);
+            }
+            if (mobileBankingFieldsWrap) {
+                mobileBankingFieldsWrap.classList.toggle('premium-payment-hidden', useCard);
+            }
+        }
+
+        function getNextBillingDate(plan) {
+            const now = new Date();
+            if (plan.cycle === 'monthly') {
+                now.setMonth(now.getMonth() + 1);
+                return now.toISOString();
+            }
+            if (plan.cycle === 'yearly') {
+                now.setFullYear(now.getFullYear() + 1);
+                return now.toISOString();
+            }
+            return null;
+        }
+
+        async function processPaymentGateway() {
+            const plan = PLAN_CATALOG[selectedPlanKey] || PLAN_CATALOG.monthly;
+            const cardHolder = document.getElementById('payCardHolder').value.trim();
+            const cardNumber = document.getElementById('payCardNumber').value.replace(/\s+/g, '');
+            const expiry = document.getElementById('payExpiry').value.trim();
+            const cvv = document.getElementById('payCvv').value.trim();
+            const mobileNumber = document.getElementById('payMobileNumber').value.trim();
+            const transactionId = document.getElementById('payTransactionId').value.trim();
+            const email = document.getElementById('payEmail').value.trim();
+            const statusEl = document.getElementById('payStatus');
+            const payBtn = document.getElementById('payNowBtn');
+            const senderNumber = mobileNumber.replace(/\s+/g, '');
+
+            if (!email.includes('@')) {
+                statusEl.style.color = '#fca5a5';
+                statusEl.textContent = 'Please provide a valid billing email.';
+                return;
+            }
+
+            if (selectedPaymentMethod === 'card') {
+                if (!cardHolder || cardNumber.length < 16 || expiry.length < 4 || cvv.length < 3) {
+                    statusEl.style.color = '#fca5a5';
+                    statusEl.textContent = 'Please provide valid card details.';
+                    return;
+                }
+            } else {
+                const isBangladeshMobile = /^(\+8801\d{9}|8801\d{9}|01\d{9})$/.test(senderNumber);
+                if (!isBangladeshMobile || transactionId.length < 6) {
+                    statusEl.style.color = '#fca5a5';
+                    statusEl.textContent = 'Please provide valid sender number and transaction ID.';
+                    return;
+                }
+            }
+
+            const authInstance = getLandingAuth();
+            const dbInstance = getLandingDb();
+            if (!authInstance || !authInstance.currentUser || !dbInstance) {
+                statusEl.style.color = '#fca5a5';
+                statusEl.textContent = 'Please login first to continue payment.';
+                return;
+            }
+
+            payBtn.disabled = true;
+            payBtn.style.opacity = '0.72';
+            statusEl.style.color = '#93c5fd';
+            statusEl.textContent = 'Processing secure payment...';
+
+            try {
+                await dbInstance.collection('users').doc(authInstance.currentUser.uid).set({
+                    subscriptionPlan: plan.key,
+                    subscriptionStatus: 'active',
+                    subscriptionAmount: plan.amount,
+                    subscriptionCycle: plan.cycle,
+                    planInterviewLimit: plan.interviewLimit,
+                    paymentMethod: selectedPaymentMethod,
+                    paymentSenderNumber: selectedPaymentMethod === 'card' ? null : senderNumber,
+                    paymentReceiverNumber: selectedPaymentMethod === 'card' ? null : MOBILE_PAYMENT_RECEIVER,
+                    paymentTransactionId: selectedPaymentMethod === 'card' ? null : transactionId.toUpperCase(),
+                    subscriptionStartedAt: new Date().toISOString(),
+                    subscriptionNextBillingAt: getNextBillingDate(plan),
+                    freeInterviewLimit: 10,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                statusEl.style.color = '#86efac';
+                statusEl.textContent = `Payment successful! ${plan.name} is now active.`;
+
+                setTimeout(() => {
+                    closePaymentGateway();
+                    window.location.href = 'auth_interview_setup.html';
+                }, 900);
+            } catch (error) {
+                statusEl.style.color = '#fca5a5';
+                statusEl.textContent = `Payment failed: ${error.message}`;
+            } finally {
+                payBtn.disabled = false;
+                payBtn.style.opacity = '1';
+            }
+        }
+
+        selectPaymentMethod('card');
+        
+        function closeContactModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('contactModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function submitContactForm() {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const company = document.getElementById('contactCompany').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+            const statusEl = document.getElementById('contactStatus');
+            const submitBtn = document.getElementById('contactSubmitBtn');
+
+            if (!name || !email || !message) {
+                statusEl.style.color = '#fca5a5';
+                statusEl.textContent = 'Please fill in Name, Email, and Message.';
+                return;
+            }
+
+            if (!email.includes('@')) {
+                statusEl.style.color = '#fca5a5';
+                statusEl.textContent = 'Please enter a valid email address.';
+                return;
+            }
+
+            statusEl.style.color = '#93c5fd';
+            statusEl.textContent = 'Sending your message...';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+
+            fetch('http://127.0.0.1:5000/api/contact-sales', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    company,
+                    message,
+                    source: 'landing-cta'
+                })
+            })
+                .then(async (response) => {
+                    const payload = await response.json().catch(() => ({}));
+                    if (!response.ok || !payload.ok) {
+                        throw new Error(payload.message || 'Request failed');
+                    }
+                    return payload;
+                })
+                .then(() => {
+                    statusEl.style.color = '#86efac';
+                    statusEl.textContent = 'Message sent successfully. Our sales team will contact you soon.';
+
+                    document.getElementById('contactName').value = '';
+                    document.getElementById('contactEmail').value = '';
+                    document.getElementById('contactCompany').value = '';
+                    document.getElementById('contactMessage').value = '';
+
+                    setTimeout(() => {
+                        closeContactModal();
+                    }, 900);
+                })
+                .catch((error) => {
+                    statusEl.style.color = '#fca5a5';
+                    statusEl.textContent = 'Could not send now. Please try again. ' + error.message;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                });
+        }
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+                closeContactModal();
+                closePaymentGateway();
+            }
+        });
+
+        const landingParams = new URLSearchParams(window.location.search);
+        if (landingParams.get('openPricing') === '1') {
+            setTimeout(() => {
+                const authInstance = getLandingAuth();
+                if (authInstance && authInstance.currentUser) {
+                    openPaymentGateway('monthly');
+                }
+                const pricingSection = document.getElementById('pricing');
+                if (pricingSection) {
+                    pricingSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 250);
+        }
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

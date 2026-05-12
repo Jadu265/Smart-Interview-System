@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Admin Dashboard - Smart Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+    <style>
+        .details-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+
+        .details-modal-backdrop.is-open {
+            display: flex;
+        }
+
+        .details-modal {
+            width: min(680px, 100%);
+            max-height: 85vh;
+            overflow-y: auto;
+            background: #0f172a;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 14px;
+            box-shadow: 0 18px 50px rgba(2, 6, 23, 0.45);
+        }
+
+        .details-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .details-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        .details-modal-close {
+            border: none;
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            background: rgba(148, 163, 184, 0.15);
+            color: #e2e8f0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .details-modal-content {
+            padding: 16px 18px 18px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 14px;
+        }
+
+        .details-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .details-label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .details-value {
+            display: block;
+            font-size: 15px;
+            color: #e2e8f0;
+            word-break: break-word;
+        }
+
+        @media (max-width: 640px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html.light-mode body.admin-shell {
+            background-color: #f3f6fb;
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .c3 {
+            background: #ffffff;
+            border-color: #dbe4ef;
+        }
+
+        html.light-mode body.admin-shell .c8,
+        html.light-mode body.admin-shell .c20,
+        html.light-mode body.admin-shell .c26,
+        html.light-mode body.admin-shell .c33,
+        html.light-mode body.admin-shell .c39,
+        html.light-mode body.admin-shell .c44,
+        html.light-mode body.admin-shell .c47,
+        html.light-mode body.admin-shell .c66,
+        html.light-mode body.admin-shell .c69,
+        html.light-mode body.admin-shell .c70,
+        html.light-mode body.admin-shell .c71,
+        html.light-mode body.admin-shell .c94 {
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .c9,
+        html.light-mode body.admin-shell .c21,
+        html.light-mode body.admin-shell .c27,
+        html.light-mode body.admin-shell .c32,
+        html.light-mode body.admin-shell .c62,
+        html.light-mode body.admin-shell .c73,
+        html.light-mode body.admin-shell .c74,
+        html.light-mode body.admin-shell .c79,
+        html.light-mode body.admin-shell .c95 {
+            color: #475569;
+        }
+
+        html.light-mode body.admin-shell .c14.nav-inactive {
+            color: #64748b;
+        }
+
+        html.light-mode body.admin-shell .c14.nav-inactive:hover {
+            background: #eff6ff;
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .c14.nav-active {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
+        html.light-mode body.admin-shell .c22 {
+            color: #64748b;
+        }
+
+        html.light-mode body.admin-shell .c22:hover {
+            color: #0f172a;
+            background: #eff6ff;
+            border-radius: 0.5rem;
+        }
+
+        html.light-mode body.admin-shell .c29,
+        html.light-mode body.admin-shell .c38,
+        html.light-mode body.admin-shell .c43,
+        html.light-mode body.admin-shell .c51,
+        html.light-mode body.admin-shell .c56,
+        html.light-mode body.admin-shell .c99,
+        html.light-mode body.admin-shell .c75,
+        html.light-mode body.admin-shell .c93 {
+            background: #ffffff;
+            border-color: #dbe4ef;
+            box-shadow: 0 14px 28px -24px rgba(15, 23, 42, 0.18);
+        }
+
+        html.light-mode body.admin-shell .c58 {
+            background: #ffffff;
+        }
+
+        html.light-mode body.admin-shell .c59 {
+            background: #f8fafc;
+        }
+
+        html.light-mode body.admin-shell .c60 {
+            color: #334155;
+            border-color: #e2e8f0;
+        }
+
+        html.light-mode body.admin-shell .c81 {
+            border-color: #e2e8f0;
+        }
+
+        html.light-mode body.admin-shell .c81:hover {
+            background: #f8fbff;
+        }
+
+        html.light-mode body.admin-shell .c84,
+        html.light-mode body.admin-shell .c61,
+        html.light-mode body.admin-shell .c80 {
+            color: #334155;
+        }
+
+        html.light-mode body.admin-shell .c53,
+        html.light-mode body.admin-shell .c64 {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .c53::placeholder {
+            color: #94a3b8;
+        }
+
+        html.light-mode body.admin-shell .c40 {
+            color: #137fec;
+        }
+
+        html.light-mode body.admin-shell .c86 {
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        html.light-mode body.admin-shell .c86:hover {
+            background: #cbd5e1;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .c49 {
+            background: #f8fafc;
+            border: 1px solid #dbe4ef;
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .c49:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        html.light-mode body.admin-shell .c54 {
+            background: #137fec;
+            color: #ffffff;
+        }
+
+        html.light-mode body.admin-shell .c54:hover {
+            background: #2563eb;
+        }
+
+        html.light-mode body.admin-shell #section-analytics .c7,
+        html.light-mode body.admin-shell #section-analytics .c66,
+        html.light-mode body.admin-shell #section-analytics .c69,
+        html.light-mode body.admin-shell #section-analytics .c70,
+        html.light-mode body.admin-shell #section-analytics .c71,
+        html.light-mode body.admin-shell #section-analytics .c94 {
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell #section-analytics .c27,
+        html.light-mode body.admin-shell #section-analytics .c32,
+        html.light-mode body.admin-shell #section-analytics .c79,
+        html.light-mode body.admin-shell #section-analytics .c95 {
+            color: #334155;
+            font-weight: 500;
+        }
+
+        html.light-mode body.admin-shell #section-analytics .c74 {
+            color: #475569;
+            font-weight: 500;
+        }
+
+        html.light-mode body.admin-shell #section-analytics .c91 {
+            background: #cbd5e1;
+        }
+
+        html.light-mode body.admin-shell .details-modal {
+            background: #ffffff;
+            border-color: #dbe4ef;
+            box-shadow: 0 18px 44px rgba(15, 23, 42, 0.24);
+        }
+
+        html.light-mode body.admin-shell .details-modal-title,
+        html.light-mode body.admin-shell .details-value {
+            color: #0f172a;
+        }
+
+        html.light-mode body.admin-shell .details-modal-header {
+            border-color: #e2e8f0;
+        }
+
+        html.light-mode body.admin-shell .details-modal-close {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        html.light-mode body.admin-shell .details-item {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        html.light-mode body.admin-shell .details-label {
+            color: #64748b;
+        }
+
+        html.light-mode body.admin-shell .c88 {
+            border: 1px solid #cbd5e1;
+            background-color: #e2e8f0;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        html.light-mode body.admin-shell .c88.diff-easy {
+            border-color: #86efac;
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        html.light-mode body.admin-shell .c88.diff-med {
+            border-color: #fde047;
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        html.light-mode body.admin-shell .c88.diff-hard {
+            border-color: #fca5a5;
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        html.light-mode body.admin-shell .c88.diff-unk {
+            border-color: #dbe4ef;
+            background-color: #f8fafc;
+            color: #64748b;
+        }
+
+        html.light-mode body.admin-shell .badge-hi {
+            background-color: #22c55e;
+        }
+
+        html.light-mode body.admin-shell .badge-mid {
+            background-color: #eab308;
+        }
+
+        html.light-mode body.admin-shell .badge-lo {
+            background-color: #ef4444;
+        }
+    </style>
+    
+    </head>
+<body class="c1 admin-shell">
+    <div class="c2">
+        <!-- Sidebar -->
+        <aside class="c3">
+            <div class="c4">
+                <div class="c5">
+                    <div class="c6">
+                        <span class="c7 material-symbols-outlined">admin_panel_settings</span>
+                    </div>
+                    <div>
+                        <h1 class="c8">Smart Interview</h1>
+                        <p class="c9">Admin Portal</p>
+                    </div>
+                </div>
+                
+                <nav class="c10">
+                    <a href="#dashboard" onclick="showSection('dashboard')" class="c14 nav-active">
+                        <span class="c12 material-symbols-outlined">dashboard</span>
+                        <span class="c13">Dashboard</span>
+                    </a>
+                    <a href="#users" onclick="showSection('users')" class="c14 nav-inactive">
+                        <span class="c12 material-symbols-outlined">group</span>
+                        <span class="c13">Users</span>
+                    </a>
+                    <a href="#interviews" onclick="showSection('interviews')" class="c14 nav-inactive">
+                        <span class="c12 material-symbols-outlined">quiz</span>
+                        <span class="c13">Interviews</span>
+                    </a>
+                    <a href="#analytics" onclick="showSection('analytics')" class="c14 nav-inactive">
+                        <span class="c12 material-symbols-outlined">analytics</span>
+                        <span class="c13">Analytics</span>
+                    </a>
+                    <a href="#support-feedback" onclick="showSection('support-feedback')" class="c14 nav-inactive">
+                        <span class="c12 material-symbols-outlined">support_agent</span>
+                        <span class="c13">Support & Feedback</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="c15">
+                <div class="c16">
+                    <div class="c17">
+                        <div class="c18">
+                            SA
+                        </div>
+                        <div class="c19">
+                            <p class="c20">System Administrator</p>
+                            <p class="c21">sisadmin</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="c22">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                    <span class="c23">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="c24">
+            <div class="c25">
+                
+                <!-- Dashboard Section -->
+                <div id="section-dashboard" class="section">
+                    <!-- Header -->
+                    <div class="c4">
+                        <h1 class="c26"><i class="fa-solid fa-shield-halved"></i> Admin Dashboard</h1>
+                        <p class="c27">System overview and management</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="c28">
+                        <div class="c29 stat">
+                            <div class="c30">
+                                <span class="c31 material-symbols-outlined">group</span>
+                                <span class="c32">Total</span>
+                            </div>
+                            <h3 class="c33" id="totalUsers">
+                                <div class="c34 spinner spinner-sm"></div>
+                            </h3>
+                            <p class="c32">Registered Users</p>
+                        </div>
+
+                        <div class="c29 stat">
+                            <div class="c30">
+                                <span class="c35 material-symbols-outlined">quiz</span>
+                                <span class="c32">Total</span>
+                            </div>
+                            <h3 class="c33" id="totalInterviews">
+                                <div class="c34 spinner spinner-sm"></div>
+                            </h3>
+                            <p class="c32">Interviews Conducted</p>
+                        </div>
+
+                        <div class="c29 stat">
+                            <div class="c30">
+                                <span class="c36 material-symbols-outlined">today</span>
+                                <span class="c32">Today</span>
+                            </div>
+                            <h3 class="c33" id="todayInterviews">
+                                <div class="c34 spinner spinner-sm"></div>
+                            </h3>
+                            <p class="c32">Today's Activity</p>
+                        </div>
+
+                        <div class="c29 stat">
+                            <div class="c30">
+                                <span class="c37 material-symbols-outlined">trending_up</span>
+                                <span class="c32">Average</span>
+                            </div>
+                            <h3 class="c33"><span id="avgScore">
+                                <div class="c34 spinner spinner-sm"></div>
+                            </span></h3>
+                            <p class="c32">Success Rate</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="c38">
+                        <div class="c30">
+                            <h2 class="c39">Recent Interviews</h2>
+                            <button onclick="showSection('interviews')" class="c40">View All <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                        <div id="recentInterviews" class="c41">
+                            <div class="c42">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Info -->
+                    <div class="c43">
+                        <div class="c29">
+                            <h2 class="c44">System Information</h2>
+                            <div class="c45">
+                                <div class="c46">
+                                    <span class="c27">Version</span>
+                                    <span class="c47">1.0.0</span>
+                                </div>
+                                <div class="c46">
+                                    <span class="c27">Environment</span>
+                                    <span class="c48">Production</span>
+                                </div>
+                                <div class="c46">
+                                    <span class="c27">Firebase Project</span>
+                                    <span class="c47">smartinterview-d2ef2</span>
+                                </div>
+                                <div class="c46">
+                                    <span class="c27">Last Updated</span>
+                                    <span class="c47" id="lastUpdated">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="c29">
+                            <h2 class="c44">Quick Actions</h2>
+                            <div class="c41">
+                                <button onclick="showSection('users')" class="c49">
+                                    <span class="c50 material-symbols-outlined">group</span>
+                                    Manage Users
+                                </button>
+                                <button onclick="showSection('interviews')" class="c49">
+                                    <span class="c50 material-symbols-outlined">quiz</span>
+                                    View Interviews
+                                </button>
+                                <button onclick="showSection('analytics')" class="c49">
+                                    <span class="c50 material-symbols-outlined">analytics</span>
+                                    View Analytics
+                                </button>
+                                <button onclick="showSection('support-feedback')" class="c49">
+                                    <span class="c50 material-symbols-outlined">support_agent</span>
+                                    Support & Feedback
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Section -->
+                <div id="section-users" class="section hidden">
+                    <div class="c4">
+                        <h1 class="c26"><i class="fa-solid fa-users"></i> User Management</h1>
+                        <p class="c27">View and manage all registered users</p>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="c51">
+                        <div class="c52">
+                            <input type="text" id="userSearch" placeholder="Search users by name or email..." class="c53">
+                            <button onclick="loadUsers()" class="c54">
+                                <span class="c55 material-symbols-outlined">refresh</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="c56">
+                        <div class="c57">
+                            <table class="c58">
+                                <thead class="c59">
+                                    <tr>
+                                        <th class="c60">User</th>
+                                        <th class="c60">Email</th>
+                                        <th class="c60">Joined</th>
+                                        <th class="c60">Interviews</th>
+                                        <th class="c60">Last Active</th>
+                                        <th class="c60">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr>
+                                        <td colspan="6" class="c61">
+                                            <div class="c34 spinner"></div>
+                                            <p class="c62">Loading users...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interviews Section -->
+                <div id="section-interviews" class="section hidden">
+                    <div class="c4">
+                        <h1 class="c26"><i class="fa-solid fa-chart-column"></i> Interview Monitoring</h1>
+                        <p class="c27">View all interview sessions and results</p>
+                    </div>
+
+                    <!-- Filter Options -->
+                    <div class="c51">
+                        <div class="c63">
+                            <select id="roleFilter" class="c64">
+                                <option value="">All Roles</option>
+                                <option value="Frontend Developer">Frontend Developer</option>
+                                <option value="Backend Developer">Backend Developer</option>
+                                <option value="Full Stack Developer">Full Stack Developer</option>
+                                <option value="DevOps Engineer">DevOps Engineer</option>
+                                <option value="Data Scientist">Data Scientist</option>
+                            </select>
+                            <select id="difficultyFilter" class="c64">
+                                <option value="">All Difficulties</option>
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                            <input type="date" id="dateFilter" class="c64">
+                            <button onclick="loadInterviews()" class="c54">
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interviews Table -->
+                    <div class="c56">
+                        <div class="c57">
+                            <table class="c58">
+                                <thead class="c59">
+                                    <tr>
+                                        <th class="c60">User</th>
+                                        <th class="c60">Role</th>
+                                        <th class="c60">Difficulty</th>
+                                        <th class="c60">Score</th>
+                                        <th class="c60">Time</th>
+                                        <th class="c60">Date</th>
+                                        <th class="c60">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="interviewsTableBody">
+                                    <tr>
+                                        <td colspan="7" class="c61">
+                                            <div class="c34 spinner"></div>
+                                            <p class="c62">Loading interviews...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="section-analytics" class="section hidden">
+                    <div class="c4">
+                        <h1 class="c26"><i class="fa-solid fa-chart-line"></i> Analytics & Insights</h1>
+                        <p class="c27">Detailed statistics and trends</p>
+                    </div>
+
+                    <!-- Analytics Cards -->
+                    <div class="c65">
+                        <div class="c29">
+                            <h3 class="c66">Most Popular Role</h3>
+                            <div class="c67">
+                                <div class="c68"><i class="fa-solid fa-briefcase"></i></div>
+                                <p class="c69" id="popularRole">Loading...</p>
+                                <p class="c32"><span id="popularRoleCount">0</span> interviews</p>
+                            </div>
+                        </div>
+
+                        <div class="c29">
+                            <h3 class="c66">Average Duration</h3>
+                            <div class="c67">
+                                <div class="c68"><i class="fa-regular fa-clock"></i></div>
+                                <p class="c70"><span id="avgDuration">0</span> min</p>
+                                <p class="c32">Per interview</p>
+                            </div>
+                        </div>
+
+                        <div class="c29">
+                            <h3 class="c66">Completion Rate</h3>
+                            <div class="c67">
+                                <div class="c68"><i class="fa-solid fa-circle-check"></i></div>
+                                <p class="c71"><span id="completionRate">0</span>%</p>
+                                <p class="c32">Fully completed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Role Distribution -->
+                    <div class="c38">
+                        <h3 class="c66">Role Distribution</h3>
+                        <div id="roleDistribution" class="c41">
+                            <div class="c42">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Over Time -->
+                    <div class="c29">
+                        <h3 class="c66">Recent Performance Trend</h3>
+                        <div id="performanceTrend" class="c72">
+                            <div class="c42">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support & Feedback Section -->
+                <div id="section-support-feedback" class="section hidden">
+                    <div class="c4">
+                        <h1 class="c26"><i class="fa-solid fa-headset"></i> Support & Feedback</h1>
+                        <p class="c27">Track user support requests and post-interview feedback.</p>
+                    </div>
+
+                    <div class="c4" style="margin-bottom: 0.75rem;">
+                        <span class="c85" style="display:inline-flex; margin-bottom:0.5rem; background: rgba(59, 130, 246, 0.15); color:#1d4ed8;">
+                            Support Requests Section
+                        </span>
+                        <p class="c27">This table shows messages sent from the support modal.</p>
+                    </div>
+
+                    <div class="c56" style="margin-bottom: 1rem;">
+                        <div class="c57">
+                            <table class="c58">
+                                <thead class="c59">
+                                    <tr>
+                                        <th class="c60">User</th>
+                                        <th class="c60">Email</th>
+                                        <th class="c60">Message</th>
+                                        <th class="c60">Date</th>
+                                        <th class="c60">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="supportRequestsBody">
+                                    <tr>
+                                        <td colspan="5" class="c61">
+                                            <div class="c34 spinner"></div>
+                                            <p class="c62">Loading support requests...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="c4" style="margin: 1.5rem 0 0.75rem;">
+                        <span class="c85" style="display:inline-flex; margin-bottom:0.5rem; background: rgba(34, 197, 94, 0.15); color:#166534;">
+                            Result Score / Interview Feedback Section
+                        </span>
+                        <p class="c27">This table shows feedback and score submitted after interviews.</p>
+                    </div>
+
+                    <div class="c56">
+                        <div class="c57">
+                            <table class="c58">
+                                <thead class="c59">
+                                    <tr>
+                                        <th class="c60">User</th>
+                                        <th class="c60">Email</th>
+                                        <th class="c60">Role</th>
+                                        <th class="c60">Rating</th>
+                                        <th class="c60">Comment</th>
+                                        <th class="c60">Date</th>
+                                        <th class="c60">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="interviewFeedbackBody">
+                                    <tr>
+                                        <td colspan="7" class="c61">
+                                            <div class="c34 spinner"></div>
+                                            <p class="c62">Loading interview feedback...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="detailsModalBackdrop" class="details-modal-backdrop" onclick="closeDetailsModal(event)">
+        <div class="details-modal" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
+            <div class="details-modal-header">
+                <h2 id="detailsModalTitle" class="details-modal-title">Details</h2>
+                <button type="button" class="details-modal-close" onclick="closeDetailsModal()" aria-label="Close details">&times;</button>
+            </div>
+            <div id="detailsModalContent" class="details-modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Scripts -->
+    <script>
+        // Check admin authentication
+        window.addEventListener('DOMContentLoaded', async () => {
+            const userType = localStorage.getItem('userType');
+            const userName = localStorage.getItem('userName');
+            
+            if (userType !== 'admin') {
+                console.log('Not admin, redirecting...');
+                window.location.href = 'auth_login.html';
+                return;
+            }
+            
+            console.log('Admin authenticated:', userName);
+            
+            // Wait for Firebase to be ready
+            let retries = 0;
+            while (typeof firebase === 'undefined' && retries < 10) {
+                console.log('Waiting for Firebase SDK...');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                retries++;
+            }
+            
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase not loaded after 5 seconds');
+                alert('Firebase failed to load. Please check your internet connection and refresh.');
+                return;
+            }
+            
+            console.log('Firebase SDK ready');
+            
+            // Wait a bit more for Firebase to fully initialize
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            initializeDashboard();
+        });
+
+        let db, allUsers = [], allInterviews = [], allSupportRequests = [], allFeedbackEntries = [];
+
+        // Initialize dashboard
+        async function initializeDashboard() {
+            console.log('Initializing admin dashboard...');
+            
+            try {
+                // Initialize Firebase if not already done
+                if (!firebase.apps || firebase.apps.length === 0) {
+                    console.log('Initializing Firebase from admin dashboard...');
+                    const firebaseConfig = {
+                        apiKey: "YOUR_NEW_API_KEY_HERE",
+                        authDomain: "smartinterview-d2ef2.firebaseapp.com",
+                        databaseURL: "https://smartinterview-d2ef2-default-rtdb.firebaseio.com",
+                        projectId: "smartinterview-d2ef2",
+                        storageBucket: "smartinterview-d2ef2.firebasestorage.app",
+                        messagingSenderId: "889760323914",
+                        appId: "1:889760323914:web:83b0166175be22c32049b3",
+                        measurementId: "G-HMGZH00Y5W"
+                    };
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
+                // Initialize Firestore
+                db = firebase.firestore();
+                console.log('Firestore initialized');
+                
+                // Load all dashboard data
+                await loadStatistics();
+                await loadRecentInterviews(5);
+                updateLastUpdated();
+                
+                console.log('Dashboard fully loaded');
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+                alert('Error: ' + error.message + '. Please refresh the page.');
+                
+                // Show 0 values on error
+                document.getElementById('totalUsers').textContent = '0';
+                document.getElementById('totalInterviews').textContent = '0';
+                document.getElementById('todayInterviews').textContent = '0';
+                document.getElementById('avgScore').textContent = '0%';
+                document.getElementById('recentInterviews').innerHTML = '<p class="c73">Error loading data</p>';
+            }
+        }
+
+        function formatDateTime(value) {
+            if (!value) return 'N/A';
+
+            try {
+                if (value.toDate && typeof value.toDate === 'function') {
+                    return value.toDate().toLocaleString();
+                }
+
+                if (value instanceof Date) {
+                    return value.toLocaleString();
+                }
+
+                if (typeof value === 'number') {
+                    const ms = value < 1000000000000 ? value * 1000 : value;
+                    const fromNumber = new Date(ms);
+                    if (!isNaN(fromNumber.getTime())) {
+                        return fromNumber.toLocaleString();
+                    }
+                }
+
+                if (typeof value === 'object') {
+                    if (typeof value.seconds === 'number') {
+                        return new Date(value.seconds * 1000).toLocaleString();
+                    }
+
+                    if (typeof value._seconds === 'number') {
+                        return new Date(value._seconds * 1000).toLocaleString();
+                    }
+
+                    if (value.nanoseconds && typeof value.seconds === 'number') {
+                        return new Date(value.seconds * 1000).toLocaleString();
+                    }
+
+                    if (value.creationTime) {
+                        const parsedCreation = new Date(value.creationTime);
+                        if (!isNaN(parsedCreation.getTime())) {
+                            return parsedCreation.toLocaleString();
+                        }
+                    }
+                }
+
+                const parsed = new Date(value);
+                if (!isNaN(parsed.getTime())) {
+                    return parsed.toLocaleString();
+                }
+            } catch (error) {
+                console.warn('Date format warning:', error);
+            }
+
+            return 'N/A';
+        }
+
+        function getUserJoinValue(user) {
+            if (!user) return null;
+            return user.createdAt || user.joinedAt || user.joinDate || user.registeredAt || user.created_at || user.dateJoined || user.registrationDate || user.metadata?.creationTime || null;
+        }
+
+        function normalizeToDate(value) {
+            if (!value) return null;
+
+            try {
+                if (value.toDate && typeof value.toDate === 'function') {
+                    const fromTs = value.toDate();
+                    return isNaN(fromTs.getTime()) ? null : fromTs;
+                }
+
+                if (value instanceof Date) {
+                    return isNaN(value.getTime()) ? null : value;
+                }
+
+                if (typeof value === 'number') {
+                    const ms = value < 1000000000000 ? value * 1000 : value;
+                    const fromNumber = new Date(ms);
+                    return isNaN(fromNumber.getTime()) ? null : fromNumber;
+                }
+
+                if (typeof value === 'object') {
+                    if (typeof value.seconds === 'number') {
+                        const fromSeconds = new Date(value.seconds * 1000);
+                        return isNaN(fromSeconds.getTime()) ? null : fromSeconds;
+                    }
+
+                    if (typeof value._seconds === 'number') {
+                        const fromUnderscoreSeconds = new Date(value._seconds * 1000);
+                        return isNaN(fromUnderscoreSeconds.getTime()) ? null : fromUnderscoreSeconds;
+                    }
+
+                    if (value.creationTime) {
+                        const fromCreation = new Date(value.creationTime);
+                        return isNaN(fromCreation.getTime()) ? null : fromCreation;
+                    }
+                }
+
+                const parsed = new Date(value);
+                return isNaN(parsed.getTime()) ? null : parsed;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function openDetailsModal(title, fields) {
+            const backdrop = document.getElementById('detailsModalBackdrop');
+            const titleEl = document.getElementById('detailsModalTitle');
+            const contentEl = document.getElementById('detailsModalContent');
+
+            if (!backdrop || !titleEl || !contentEl) return;
+
+            titleEl.textContent = title;
+
+            const rows = fields.map(field => `
+                <div class="details-item">
+                    <span class="details-label">${escapeHtml(field.label)}</span>
+                    <span class="details-value">${escapeHtml(field.value ?? 'N/A')}</span>
+                </div>
+            `).join('');
+
+            contentEl.innerHTML = `<div class="details-grid">${rows}</div>`;
+            backdrop.classList.add('is-open');
+        }
+
+        function closeDetailsModal(event) {
+            if (event && event.target && event.target.id !== 'detailsModalBackdrop') {
+                return;
+            }
+            document.getElementById('detailsModalBackdrop')?.classList.remove('is-open');
+        }
+
+        function previewText(value, maxLength) {
+            const plain = String(value || '').replace(/\s+/g, ' ').trim();
+            if (!plain) {
+                return 'N/A';
+            }
+            if (plain.length <= maxLength) {
+                return plain;
+            }
+            return plain.slice(0, maxLength).trim() + '...';
+        }
+
+        function toEpoch(value) {
+            const dt = normalizeToDate(value);
+            return dt ? dt.getTime() : 0;
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            console.log('Loading statistics...');
+            try {
+                // Load users
+                console.log('Fetching users collection...');
+                const usersSnapshot = await db.collection('users').get();
+                const totalUsers = usersSnapshot.size;
+                console.log(`Found ${totalUsers} users`);
+                document.getElementById('totalUsers').textContent = totalUsers;
+                
+                // Load interviews
+                console.log('Fetching interviews collection...');
+                const interviewsSnapshot = await db.collection('interviews').get();
+                const totalInterviews = interviewsSnapshot.size;
+                console.log(`Found ${totalInterviews} interviews`);
+                document.getElementById('totalInterviews').textContent = totalInterviews;
+                
+                // Get today's date
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Count today's interviews and calculate average score
+                let todayCount = 0;
+                let totalScore = 0;
+                let scoreCount = 0;
+                
+                interviewsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Check if interview is from today
+                    if (data.createdAt && data.createdAt.toDate) {
+                        const interviewDate = data.createdAt.toDate();
+                        interviewDate.setHours(0, 0, 0, 0);
+                        if (interviewDate.getTime() === today.getTime()) {
+                            todayCount++;
+                        }
+                    }
+                    
+                    // Calculate average score
+                    if (data.score !== undefined && data.score !== null) {
+                        totalScore += data.score;
+                        scoreCount++;
+                    }
+                });
+                
+                document.getElementById('todayInterviews').textContent = todayCount;
+                console.log(`Today's interviews: ${todayCount}`);
+                
+                const avgScore = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 0;
+                document.getElementById('avgScore').textContent = avgScore + '%';
+                console.log(`Average score: ${avgScore}%`);
+                
+                console.log('Statistics loaded successfully');
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                console.error('Error details:', error.message, error.code);
+                document.getElementById('totalUsers').textContent = '0';
+                document.getElementById('totalInterviews').textContent = '0';
+                document.getElementById('todayInterviews').textContent = '0';
+                document.getElementById('avgScore').textContent = '0%';
+            }
+        }
+
+        // Load recent interviews
+        async function loadRecentInterviews(limit = 5) {
+            console.log(`Loading ${limit} recent interviews...`);
+            try {
+                const interviewsSnapshot = await db.collection('interviews')
+                    .orderBy('createdAt', 'desc')
+                    .limit(limit)
+                    .get();
+                
+                const recentDiv = document.getElementById('recentInterviews');
+                
+                console.log(`Found ${interviewsSnapshot.size} recent interviews`);
+                
+                if (interviewsSnapshot.empty) {
+                    recentDiv.innerHTML = '<p class="c74">No interviews yet</p>';
+                    console.log('No interviews found in database');
+                    return;
+                }
+                
+                let html = '';
+                for (const doc of interviewsSnapshot.docs) {
+                    const data = doc.data();
+                    
+                    console.log('Interview #' + doc.id);
+                    console.log('  - userId:', data.userId);
+                    console.log('  - userEmail:', data.userEmail);
+                    console.log('  - userName:', data.userName);
+                    console.log('  - role:', data.role);
+                    console.log('  - All fields:', Object.keys(data));
+                    
+                   
+                    let userName = 'Unknown User';
+                    
+                    
+                    if (data.userName) {
+                        userName = data.userName;
+                    } 
+                  
+                    else if (data.userEmail) {
+                        userName = data.userEmail;
+                    }
+                    // Finally try to fetch from users collection
+                    else if (data.userId) {
+                        try {
+                            const userDoc = await db.collection('users').doc(data.userId).get();
+                            if (userDoc.exists) {
+                                const userData = userDoc.data();
+                                userName = userData.displayName || userData.email || 'Unknown User';
+                                console.log('Found user from collection:', userName);
+                            } else {
+                                console.log('User document not found for userId:', data.userId);
+                            }
+                        } catch (e) {
+                            console.error('Error fetching user:', e);
+                        }
+                    }
+                    
+                    const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'N/A';
+                    const score = data.score !== undefined ? data.score : 'N/A';
+                    const scoreColor = score >= 80 ? 'score-hi' : score >= 50 ? 'score-mid' : 'score-lo';
+                    
+                    html += `
+                        <div class="c75">
+                            <div class="c76">
+                                <p class="c47">${userName}</p>
+                                <p class="c32">${data.role || 'N/A'} - ${data.difficulty || 'N/A'}</p>
+                            </div>
+                            <div class="c77">
+                                <p class="c78 ${scoreColor}">${score}%</p>
+                                <p class="c79">${date}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                recentDiv.innerHTML = html;
+                console.log('Recent interviews displayed successfully');
+            } catch (error) {
+                console.error('Error loading recent interviews:', error);
+                console.error('Error details:', error.message, error.code);
+                document.getElementById('recentInterviews').innerHTML = '<p class="c73">Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Load users (for Users section)
+        async function loadUsers() {
+            try {
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="c61">
+                            <div class="c34 spinner"></div>
+                            <p class="c62">Loading users...</p>
+                        </td>
+                    </tr>
+                `;
+                
+                const usersSnapshot = await db.collection('users').get();
+                allUsers = [];
+                
+                if (usersSnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="c80">No users found</td></tr>';
+                    return;
+                }
+                
+                // Get interview counts for each user
+                const interviewsSnapshot = await db.collection('interviews').get();
+                const interviewCounts = {};
+                const earliestInterviewByUserKey = {};
+
+                interviewsSnapshot.forEach(doc => {
+                    const interviewData = doc.data() || {};
+                    const userId = interviewData.userId;
+                    const userEmail = interviewData.userEmail ? interviewData.userEmail.toLowerCase() : '';
+                    const interviewDateObj = normalizeToDate(interviewData.createdAt);
+
+                    if (userId) {
+                        interviewCounts[userId] = (interviewCounts[userId] || 0) + 1;
+                    }
+
+                    const candidateKeys = [];
+                    if (userId) candidateKeys.push(userId);
+                    if (userEmail) candidateKeys.push(userEmail);
+
+                    if (interviewDateObj && candidateKeys.length) {
+                        candidateKeys.forEach(key => {
+                            if (!earliestInterviewByUserKey[key] || interviewDateObj < earliestInterviewByUserKey[key]) {
+                                earliestInterviewByUserKey[key] = interviewDateObj;
+                            }
+                        });
+                    }
+                });
+                
+                for (const doc of usersSnapshot.docs) {
+                    const data = doc.data();
+                    const derivedJoinedAt = earliestInterviewByUserKey[doc.id] || (data.email ? earliestInterviewByUserKey[data.email.toLowerCase()] : null) || null;
+
+                    allUsers.push({
+                        id: doc.id,
+                        ...data,
+                        interviewCount: interviewCounts[doc.id] || 0,
+                        derivedJoinedAt
+                    });
+                }
+                
+                // Apply search filter if exists
+                const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+                let filteredUsers = allUsers;
+                if (searchTerm) {
+                    filteredUsers = allUsers.filter(user => 
+                        (user.displayName || '').toLowerCase().includes(searchTerm) ||
+                        (user.email || '').toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                if (filteredUsers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="c80">No matching users found</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                filteredUsers.forEach(user => {
+                    const joinDate = formatDateTime(getUserJoinValue(user) || user.derivedJoinedAt);
+                    const lastActive = formatDateTime(user.lastLogin || user.updatedAt);
+                    
+                    html += `
+                        <tr class="c81">
+                            <td class="c82">
+                                <div class="c17">
+                                    <div class="c83">
+                                        ${(user.displayName || user.email || 'U')[0].toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p class="c47">${user.displayName || 'No name'}</p>
+                                        <p class="c79">${user.uid || user.id || ''}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="c84">${user.email || 'N/A'}</td>
+                            <td class="c84">${joinDate}</td>
+                            <td class="c82">
+                                <span class="c85">
+                                    ${user.interviewCount}
+                                </span>
+                            </td>
+                            <td class="c84">${lastActive}</td>
+                            <td class="c82">
+                                <button onclick="viewUserDetails('${user.id}')" class="c86">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html;
+                console.log('Users loaded:', filteredUsers.length);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="6" class="c87">Error loading users</td></tr>';
+            }
+        }
+
+        // Load interviews (for Interviews section)
+        async function loadInterviews() {
+            try {
+                const tbody = document.getElementById('interviewsTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="c61">
+                            <div class="c34 spinner"></div>
+                            <p class="c62">Loading interviews...</p>
+                        </td>
+                    </tr>
+                `;
+                
+                const interviewsSnapshot = await db.collection('interviews')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                const usersSnapshot = await db.collection('users').get();
+                const userMetaByDocId = {};
+                const userMetaByUid = {};
+                const userMetaByEmail = {};
+
+                usersSnapshot.forEach(userDoc => {
+                    const userData = userDoc.data() || {};
+                    const userMeta = {
+                        id: userDoc.id,
+                        uid: userData.uid || userDoc.id,
+                        displayName: userData.displayName || '',
+                        email: userData.email || '',
+                        joinedAt: getUserJoinValue(userData)
+                    };
+
+                    userMetaByDocId[userDoc.id] = userMeta;
+                    if (userMeta.uid) {
+                        userMetaByUid[userMeta.uid] = userMeta;
+                    }
+                    if (userMeta.email) {
+                        userMetaByEmail[userMeta.email.toLowerCase()] = userMeta;
+                    }
+                });
+                
+                allInterviews = [];
+                const earliestInterviewByUserKey = {};
+
+                interviewsSnapshot.forEach(interviewDoc => {
+                    const interviewData = interviewDoc.data() || {};
+                    const interviewDateObj = normalizeToDate(interviewData.createdAt);
+                    const userId = interviewData.userId;
+                    const userEmail = interviewData.userEmail ? interviewData.userEmail.toLowerCase() : '';
+
+                    const keys = [];
+                    if (userId) keys.push(userId);
+                    if (userEmail) keys.push(userEmail);
+
+                    if (interviewDateObj) {
+                        keys.forEach(key => {
+                            if (!earliestInterviewByUserKey[key] || interviewDateObj < earliestInterviewByUserKey[key]) {
+                                earliestInterviewByUserKey[key] = interviewDateObj;
+                            }
+                        });
+                    }
+                });
+                
+                if (interviewsSnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="c80">No interviews found</td></tr>';
+                    return;
+                }
+                
+                for (const doc of interviewsSnapshot.docs) {
+                    const data = doc.data();
+                    
+                    // Determine user name from multiple possible fields
+                    let userName = 'Unknown User';
+                    
+                    // Priority 1: Check if userName is already saved
+                    if (data.userName) {
+                        userName = data.userName;
+                    }
+                    const matchedUserMeta = (data.userId && (userMetaByDocId[data.userId] || userMetaByUid[data.userId])) ||
+                        (data.userEmail && userMetaByEmail[data.userEmail.toLowerCase()]) ||
+                        null;
+
+                    if (!data.userName && data.userEmail) {
+                        userName = data.userEmail;
+                    }
+
+                    if (matchedUserMeta) {
+                        userName = data.userName || matchedUserMeta.displayName || matchedUserMeta.email || userName;
+                    }
+                    
+                    allInterviews.push({
+                        id: doc.id,
+                        ...data,
+                        userName: userName,
+                        userUid: data.userId || (matchedUserMeta ? matchedUserMeta.uid : 'N/A'),
+                        userEmailResolved: data.userEmail || (matchedUserMeta ? matchedUserMeta.email : 'N/A'),
+                        userJoinedAt: (matchedUserMeta ? matchedUserMeta.joinedAt : null) || (data.userId ? earliestInterviewByUserKey[data.userId] : null) || (data.userEmail ? earliestInterviewByUserKey[data.userEmail.toLowerCase()] : null) || null
+                    });
+                }
+                
+                // Apply filters
+                const roleFilter = document.getElementById('roleFilter').value;
+                const difficultyFilter = document.getElementById('difficultyFilter').value;
+                const dateFilter = document.getElementById('dateFilter').value;
+                
+                let filteredInterviews = allInterviews;
+                if (roleFilter) {
+                    filteredInterviews = filteredInterviews.filter(i => i.role === roleFilter);
+                }
+                if (difficultyFilter) {
+                    filteredInterviews = filteredInterviews.filter(i => i.difficulty === difficultyFilter);
+                }
+                if (dateFilter) {
+                    const filterDate = new Date(dateFilter);
+                    filterDate.setHours(0, 0, 0, 0);
+                    filteredInterviews = filteredInterviews.filter(i => {
+                        if (i.createdAt && i.createdAt.toDate) {
+                            const iDate = i.createdAt.toDate();
+                            iDate.setHours(0, 0, 0, 0);
+                            return iDate.getTime() === filterDate.getTime();
+                        }
+                        return false;
+                    });
+                }
+                
+                if (filteredInterviews.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="c80">No matching interviews found</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                filteredInterviews.forEach(interview => {
+                    const date = formatDateTime(interview.createdAt);
+                    const score = interview.score !== undefined ? interview.score : 'N/A';
+                    const scoreColor = score >= 80 ? 'badge-hi' : score >= 50 ? 'badge-mid' : 'badge-lo';
+                    const time = interview.timeTaken ? Math.round(interview.timeTaken / 60) + 'min' : 'N/A';
+                    const difficultyRaw = (interview.difficulty || '').toString().trim().toLowerCase();
+                    const difficultyClass = difficultyRaw === 'easy'
+                        ? 'diff-easy'
+                        : difficultyRaw === 'medium'
+                            ? 'diff-med'
+                            : difficultyRaw === 'hard'
+                                ? 'diff-hard'
+                                : 'diff-unk';
+                    const difficultyLabel = difficultyRaw
+                        ? difficultyRaw.replace(/\b\w/g, (char) => char.toUpperCase())
+                        : 'Unknown';
+                    
+                    html += `
+                        <tr class="c81">
+                            <td class="c82">
+                                <p class="c47">${interview.userName}</p>
+                            </td>
+                            <td class="c84">${interview.role || 'N/A'}</td>
+                            <td class="c82">
+                                <span class="c88 ${difficultyClass}">
+                                    ${difficultyLabel}
+                                </span>
+                            </td>
+                            <td class="c82">
+                                <span class="c89 ${scoreColor}">
+                                    ${score}%
+                                </span>
+                            </td>
+                            <td class="c84">${time}</td>
+                            <td class="c84">${date}</td>
+                            <td class="c82">
+                                <button onclick="viewInterviewDetails('${interview.id}')" class="c86">
+                                    Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html;
+                console.log('Interviews loaded:', filteredInterviews.length);
+            } catch (error) {
+                console.error('Error loading interviews:', error);
+                document.getElementById('interviewsTableBody').innerHTML = '<tr><td colspan="7" class="c87">Error loading interviews</td></tr>';
+            }
+        }
+
+        // Load analytics
+        async function loadAnalytics() {
+            try {
+                const interviewsSnapshot = await db.collection('interviews').get();
+                
+                if (interviewsSnapshot.empty) {
+                    document.getElementById('popularRole').textContent = 'N/A';
+                    document.getElementById('popularRoleCount').textContent = '0';
+                    document.getElementById('avgDuration').textContent = '0';
+                    document.getElementById('completionRate').textContent = '0';
+                    document.getElementById('roleDistribution').innerHTML = '<p class="c74">No data available</p>';
+                    document.getElementById('performanceTrend').innerHTML = '<p class="c74">No data available</p>';
+                    return;
+                }
+                
+                // Count roles
+                const roleCounts = {};
+                let totalDuration = 0;
+                let durationCount = 0;
+                let completedCount = 0;
+                
+                interviewsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Count roles
+                    if (data.role) {
+                        roleCounts[data.role] = (roleCounts[data.role] || 0) + 1;
+                    }
+                    
+                    // Calculate average duration
+                    if (data.timeTaken) {
+                        totalDuration += data.timeTaken;
+                        durationCount++;
+                    }
+                    
+                    // Count completed (assuming score exists = completed)
+                    if (data.score !== undefined && data.score !== null) {
+                        completedCount++;
+                    }
+                });
+                
+                // Most popular role
+                let popularRole = 'N/A';
+                let maxCount = 0;
+                for (const [role, count] of Object.entries(roleCounts)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        popularRole = role;
+                    }
+                }
+                document.getElementById('popularRole').textContent = popularRole;
+                document.getElementById('popularRoleCount').textContent = maxCount;
+                
+                // Average duration
+                const avgDuration = durationCount > 0 ? Math.round(totalDuration / durationCount / 60) : 0;
+                document.getElementById('avgDuration').textContent = avgDuration;
+                
+                // Completion rate
+                const completionRate = Math.round((completedCount / interviewsSnapshot.size) * 100);
+                document.getElementById('completionRate').textContent = completionRate;
+                
+                // Role distribution chart
+                let roleHtml = '';
+                const sortedRoles = Object.entries(roleCounts).sort((a, b) => b[1] - a[1]);
+                const maxRoleCount = sortedRoles[0] ? sortedRoles[0][1] : 1;
+                
+                sortedRoles.forEach(([role, count]) => {
+                    const percentage = (count / interviewsSnapshot.size) * 100;
+                    const barWidth = (count / maxRoleCount) * 100;
+                    roleHtml += `
+                        <div>
+                            <div class="c90">
+                                <span class="c7">${role}</span>
+                                <span class="c27">${count} (${percentage.toFixed(0)}%)</span>
+                            </div>
+                            <div class="c91">
+                                <div class="c92" style="width: ${barWidth}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('roleDistribution').innerHTML = roleHtml;
+                
+                // Performance trend (simple text summary for now)
+                const recentInterviews = [];
+                interviewsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.score !== undefined && data.createdAt) {
+                        recentInterviews.push({
+                            score: data.score,
+                            date: data.createdAt.toDate()
+                        });
+                    }
+                });
+                
+                recentInterviews.sort((a, b) => b.date - a.date);
+                const last5 = recentInterviews.slice(0, 5);
+                
+                if (last5.length > 0) {
+                    const avgLast5 = last5.reduce((sum, i) => sum + i.score, 0) / last5.length;
+                    const trendText = avgLast5 >= 70
+                        ? 'Excellent performance'
+                        : avgLast5 >= 50
+                            ? 'Good performance'
+                            : 'Needs improvement';
+                    
+                    document.getElementById('performanceTrend').innerHTML = `
+                        <div class="c93">
+                            <p class="c94">${Math.round(avgLast5)}%</p>
+                            <p class="c27">${trendText}</p>
+                            <p class="c95">Based on last ${last5.length} interviews</p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('performanceTrend').innerHTML = '<p class="c74">No data available</p>';
+                }
+                
+                console.log('Analytics loaded');
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        async function loadSupportAndFeedback() {
+            const supportBody = document.getElementById('supportRequestsBody');
+            const feedbackBody = document.getElementById('interviewFeedbackBody');
+
+            if (!supportBody || !feedbackBody) {
+                return;
+            }
+
+            supportBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="c61">
+                        <div class="c34 spinner"></div>
+                        <p class="c62">Loading support requests...</p>
+                    </td>
+                </tr>
+            `;
+
+            feedbackBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="c61">
+                        <div class="c34 spinner"></div>
+                        <p class="c62">Loading interview feedback...</p>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const [supportResult, interviewsResult, usersResult] = await Promise.allSettled([
+                    db.collection('support_requests').get(),
+                    db.collection('interviews').get(),
+                    db.collection('users').get()
+                ]);
+
+                const supportError = supportResult.status === 'rejected' ? supportResult.reason : null;
+                const interviewsError = interviewsResult.status === 'rejected' ? interviewsResult.reason : null;
+                const usersError = usersResult.status === 'rejected' ? usersResult.reason : null;
+
+                const supportDocs = supportResult.status === 'fulfilled' ? supportResult.value.docs : [];
+                const interviewDocs = interviewsResult.status === 'fulfilled' ? interviewsResult.value.docs : [];
+                const userDocs = usersResult.status === 'fulfilled' ? usersResult.value.docs : [];
+
+                const userById = {};
+                const userByEmail = {};
+                userDocs.forEach((doc) => {
+                    const data = doc.data() || {};
+                    const displayName = data.displayName || '';
+                    const emailLower = String(data.email || '').toLowerCase();
+                    const uid = data.uid || doc.id;
+
+                    userById[uid] = { displayName, email: data.email || '' };
+                    if (emailLower) {
+                        userByEmail[emailLower] = { displayName, email: data.email || '' };
+                    }
+                });
+
+                allSupportRequests = supportDocs.map((doc) => {
+                    const data = doc.data() || {};
+                    const fallbackUser = (data.userId && userById[data.userId]) ||
+                        (data.userEmail ? userByEmail[String(data.userEmail).toLowerCase()] : null) ||
+                        (data.email ? userByEmail[String(data.email).toLowerCase()] : null) ||
+                        null;
+
+                    return {
+                        id: doc.id,
+                        ...data,
+                        resolvedName: data.name || (fallbackUser ? fallbackUser.displayName : '') || 'Unknown',
+                        resolvedEmail: data.userEmail || data.email || (fallbackUser ? fallbackUser.email : '') || 'N/A'
+                    };
+                }).sort((a, b) => toEpoch(b.createdAt) - toEpoch(a.createdAt));
+
+                if (supportError) {
+                    const supportDenied = String(supportError.code || '').includes('permission-denied');
+                    const supportMessage = supportDenied
+                        ? 'Permission denied: unable to read support requests'
+                        : 'Error loading support requests';
+                    supportBody.innerHTML = `<tr><td colspan="5" class="c87">${supportMessage}</td></tr>`;
+                } else if (!allSupportRequests.length) {
+                    supportBody.innerHTML = '<tr><td colspan="5" class="c80">No support requests found</td></tr>';
+                } else {
+                    supportBody.innerHTML = allSupportRequests.map((item) => `
+                        <tr class="c81">
+                            <td class="c82"><p class="c47">${escapeHtml(item.resolvedName)}</p></td>
+                            <td class="c84">${escapeHtml(item.resolvedEmail)}</td>
+                            <td class="c84">${escapeHtml(previewText(item.message, 60))}</td>
+                            <td class="c84">${escapeHtml(formatDateTime(item.createdAt))}</td>
+                            <td class="c82">
+                                <button onclick="viewSupportRequestDetails('${item.id}')" class="c86">Details</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                allFeedbackEntries = [];
+                interviewDocs.forEach((doc) => {
+                    const data = doc.data() || {};
+                    if (!data.feedback || typeof data.feedback.rating !== 'number') {
+                        return;
+                    }
+
+                    const fallbackUser = (data.userId && userById[data.userId]) ||
+                        (data.userEmail ? userByEmail[String(data.userEmail).toLowerCase()] : null) ||
+                        null;
+
+                    allFeedbackEntries.push({
+                        id: doc.id,
+                        role: data.role || 'N/A',
+                        rating: data.feedback.rating,
+                        comment: data.feedback.comment || '',
+                        submittedAt: data.feedback.submittedAt || null,
+                        userName: data.userName || (fallbackUser ? fallbackUser.displayName : '') || 'Unknown',
+                        userEmail: data.userEmail || (fallbackUser ? fallbackUser.email : '') || 'N/A'
+                    });
+                });
+
+                allFeedbackEntries.sort((a, b) => toEpoch(b.submittedAt) - toEpoch(a.submittedAt));
+
+                if (interviewsError) {
+                    const feedbackDenied = String(interviewsError.code || '').includes('permission-denied');
+                    const feedbackMessage = feedbackDenied
+                        ? 'Permission denied: unable to read interview feedback'
+                        : 'Error loading interview feedback';
+                    feedbackBody.innerHTML = `<tr><td colspan="7" class="c87">${feedbackMessage}</td></tr>`;
+                } else if (!allFeedbackEntries.length) {
+                    feedbackBody.innerHTML = '<tr><td colspan="7" class="c80">No interview feedback submitted yet</td></tr>';
+                } else {
+                    feedbackBody.innerHTML = allFeedbackEntries.map((item) => `
+                        <tr class="c81">
+                            <td class="c82"><p class="c47">${escapeHtml(item.userName)}</p></td>
+                            <td class="c84">${escapeHtml(item.userEmail)}</td>
+                            <td class="c84">${escapeHtml(item.role)}</td>
+                            <td class="c82"><span class="c85">${item.rating}/5</span></td>
+                            <td class="c84">${escapeHtml(previewText(item.comment || 'No comment', 55))}</td>
+                            <td class="c84">${escapeHtml(formatDateTime(item.submittedAt))}</td>
+                            <td class="c82">
+                                <button onclick="viewInterviewFeedbackDetails('${item.id}')" class="c86">Details</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                if (usersError) {
+                    console.warn('Users collection unavailable while building support/feedback fallback data:', usersError);
+                }
+            } catch (error) {
+                console.error('Error loading support/feedback:', error);
+                supportBody.innerHTML = '<tr><td colspan="5" class="c87">Error loading support requests</td></tr>';
+                feedbackBody.innerHTML = '<tr><td colspan="7" class="c87">Error loading interview feedback</td></tr>';
+            }
+        }
+
+        // Show section
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById('section-' + sectionName);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            
+            // Update nav links
+            document.querySelectorAll('.c14').forEach(link => {
+                link.classList.remove('nav-active');
+                link.classList.add('nav-inactive');
+            });
+            
+            // Find and highlight the clicked nav link
+            const clickedLink = event && event.target ? event.target.closest('.c14') : null;
+            if (clickedLink) {
+                clickedLink.classList.add('nav-active');
+                clickedLink.classList.remove('nav-inactive');
+            } else {
+                // If called from button, find the nav link by section name
+                const navLinks = document.querySelectorAll('.c14');
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === '#' + sectionName) {
+                        link.classList.add('nav-active');
+                        link.classList.remove('nav-inactive');
+                    }
+                });
+            }
+            
+            // Load section data
+            if (sectionName === 'users') {
+                loadUsers();
+            } else if (sectionName === 'interviews') {
+                loadInterviews();
+            } else if (sectionName === 'analytics') {
+                loadAnalytics();
+            } else if (sectionName === 'support-feedback') {
+                loadSupportAndFeedback();
+            }
+        }
+
+        // View user details
+        function viewUserDetails(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (user) {
+                openDetailsModal('User Details', [
+                    { label: 'Name', value: user.displayName || 'N/A' },
+                    { label: 'Email', value: user.email || 'N/A' },
+                    { label: 'UID', value: user.uid || user.id || 'N/A' },
+                    { label: 'Interviews', value: user.interviewCount || 0 },
+                    { label: 'Joined', value: formatDateTime(getUserJoinValue(user) || user.derivedJoinedAt) },
+                    { label: 'Last Active', value: formatDateTime(user.lastLogin || user.updatedAt) }
+                ]);
+            }
+        }
+
+        // View interview details
+        function viewInterviewDetails(interviewId) {
+            const interview = allInterviews.find(i => i.id === interviewId);
+            if (interview) {
+                const scoreValue = interview.score !== undefined && interview.score !== null ? `${interview.score}%` : 'N/A';
+                const timeValue = interview.timeTaken ? `${Math.round(interview.timeTaken / 60)} min` : 'N/A';
+
+                openDetailsModal('Interview Details', [
+                    { label: 'User', value: interview.userName || 'N/A' },
+                    { label: 'Email', value: interview.userEmailResolved || 'N/A' },
+                    { label: 'UID', value: interview.userUid || 'N/A' },
+                    { label: 'Joined', value: formatDateTime(interview.userJoinedAt) },
+                    { label: 'Role', value: interview.role || 'N/A' },
+                    { label: 'Difficulty', value: interview.difficulty || 'N/A' },
+                    { label: 'Score', value: scoreValue },
+                    { label: 'Time Taken', value: timeValue },
+                    { label: 'Interview Date', value: formatDateTime(interview.createdAt) },
+                    { label: 'Interview ID', value: interview.id }
+                ]);
+            }
+        }
+
+        function viewSupportRequestDetails(requestId) {
+            const request = allSupportRequests.find(item => item.id === requestId);
+            if (!request) {
+                return;
+            }
+
+            openDetailsModal('Support Request', [
+                { label: 'Name', value: request.resolvedName || 'N/A' },
+                { label: 'Email', value: request.resolvedEmail || 'N/A' },
+                { label: 'User ID', value: request.userId || 'N/A' },
+                { label: 'Status', value: request.status || 'new' },
+                { label: 'Source', value: request.source || 'N/A' },
+                { label: 'Submitted At', value: formatDateTime(request.createdAt) },
+                { label: 'Page URL', value: request.pageUrl || 'N/A' },
+                { label: 'Message', value: request.message || 'N/A' }
+            ]);
+        }
+
+        function viewInterviewFeedbackDetails(interviewId) {
+            const feedback = allFeedbackEntries.find(item => item.id === interviewId);
+            if (!feedback) {
+                return;
+            }
+
+            openDetailsModal('Interview Feedback', [
+                { label: 'User', value: feedback.userName || 'N/A' },
+                { label: 'Email', value: feedback.userEmail || 'N/A' },
+                { label: 'Role', value: feedback.role || 'N/A' },
+                { label: 'Rating', value: `${feedback.rating || 0}/5` },
+                { label: 'Submitted At', value: formatDateTime(feedback.submittedAt) },
+                { label: 'Interview ID', value: feedback.id },
+                { label: 'Comment', value: feedback.comment || 'No comment provided' }
+            ]);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDetailsModal();
+            }
+        });
+
+        // Update last updated time
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleTimeString();
+        }
+
+        // Logout
+        async function logout() {
+            const shouldLogout = await sisConfirm('Are you sure you want to logout?', {
+                title: 'Confirm Logout',
+                okText: 'Logout',
+                cancelText: 'Stay Logged In',
+                variant: 'danger'
+            });
+
+            if (!shouldLogout) {
+                return;
+            }
+
+            console.log('Logging out admin...');
+            localStorage.removeItem('userType');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'landingpage.html';
+        }
+
+        // Search users on input
+        document.getElementById('userSearch')?.addEventListener('input', () => {
+            if (allUsers.length > 0) {
+                loadUsers();
+            }
+        });
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(() => {
+            if (document.getElementById('section-dashboard').classList.contains('hidden') === false) {
+                loadStatistics();
+                updateLastUpdated();
+            }
+        }, 30000);
+
+        console.log('Admin dashboard script loaded');
+    </script>
+</body>
+</html>
+
+
+
+
+

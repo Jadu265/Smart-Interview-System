@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Dashboard - Smart Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+    </head>
+<body class="c1 dashboard-shell">
+    <div class="c2">
+        <!-- Sidebar -->
+        <aside class="c3">
+            <div class="c4">
+                <div class="c5">
+                    <div class="c96">
+                        <span class="c7 material-symbols-outlined">psychology</span>
+                    </div>
+                    <div>
+                        <h1 class="c8">Smart Interview</h1>
+                        <p class="c79">Candidate Portal</p>
+                    </div>
+                </div>
+                
+                <nav class="c10">
+                    <a href="auth_dashboard.html" class="c97">
+                        <span class="c12 material-symbols-outlined">dashboard</span>
+                        <span class="c13">Dashboard</span>
+                    </a>
+                    <a href="landingpage.html" class="c98">
+                        <span class="c12 material-symbols-outlined">home</span>
+                        <span class="c13">Home Page</span>
+                    </a>
+                    <a id="startInterviewNav" href="auth_interview_setup.html" class="c98">
+                        <span class="c12 material-symbols-outlined">play_circle</span>
+                        <span class="c13">Start Interview</span>
+                    </a>
+                    <a href="auth_history.html" class="c98">
+                        <span class="c12 material-symbols-outlined">history</span>
+                        <span class="c13">History</span>
+                    </a>
+                    <a href="auth_profile.html" class="c98">
+                        <span class="c12 material-symbols-outlined">person</span>
+                        <span class="c13">Profile</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="c15">
+                <div class="c99">
+                    <div class="c17">
+                        <div id="userAvatar" class="c100">
+                            U
+                        </div>
+                        <div class="c19">
+                            <p id="userName" class="c20">Loading...</p>
+                            <p id="userEmail" class="c101">...</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="c22">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                    <span class="c23">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="c24">
+            <div class="c102">
+                <!-- Header -->
+                <div class="c4">
+                    <h1 class="c26">Welcome <span id="welcomeName">Loading...</span> </h1>
+                    <p class="c27">Ready to practice your interview skills?</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="c103">
+                    <div class="c29">
+                        <div class="c30">
+                            <span class="c31 material-symbols-outlined">assessment</span>
+                            <span class="c32">Total</span>
+                        </div>
+                        <h3 class="c33" id="totalInterviews">0</h3>
+                        <p class="c32">Interviews Taken</p>
+                    </div>
+
+                    <div class="c29">
+                        <div class="c30">
+                            <span class="c35 material-symbols-outlined">emoji_events</span>
+                            <span class="c32">Average</span>
+                        </div>
+                        <h3 class="c33"><span id="avgScore">0</span>%</h3>
+                        <p class="c32">Success Rate</p>
+                    </div>
+
+                    <div class="c29">
+                        <div class="c30">
+                            <span class="c36 material-symbols-outlined">schedule</span>
+                            <span class="c32">Total</span>
+                        </div>
+                        <h3 class="c33"><span id="totalTime">0</span>min</h3>
+                        <p class="c32">Practice Time</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="c104">
+                    <div class="c105">
+                        <h3 class="c106">Start New Interview</h3>
+                        <p class="c107">Begin a mock interview session now</p>
+                        <button id="startInterviewBtn" onclick="window.location.href='auth_interview_setup.html'" class="c108">
+                            Start Interview
+                        </button>
+                    </div>
+
+                    <div class="c29">
+                        <h3 class="c106">View History</h3>
+                        <p class="c109">Review your past interview performances</p>
+                        <button onclick="window.location.href='auth_history.html'" class="c110">
+                            View All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Interviews -->
+                <div class="c29">
+                    <h3 class="c44">Recent Interviews</h3>
+                    <div id="recentInterviews" class="c41">
+                        <div class="c111">
+                            <div class="c112 spinner"></div>
+                            <p>Loading interviews...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase Config -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_NEW_API_KEY_HERE",
+            authDomain: "smartinterview-d2ef2.firebaseapp.com",
+            databaseURL: "https://smartinterview-d2ef2-default-rtdb.firebaseio.com",
+            projectId: "smartinterview-d2ef2",
+            storageBucket: "smartinterview-d2ef2.firebasestorage.app",
+            messagingSenderId: "889760323914",
+            appId: "1:889760323914:web:83b0166175be22c32049b3",
+            measurementId: "G-HMGZH00Y5W"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const isDemoMode = new URLSearchParams(window.location.search).get('demo') === 'true';
+        const fromLanding = new URLSearchParams(window.location.search).get('fromLanding') === 'true';
+
+        if (fromLanding && !isDemoMode) {
+            history.pushState({ landingReturnGuard: true }, '', window.location.href);
+            window.addEventListener('popstate', () => {
+                window.location.replace('landingpage.html');
+            });
+        }
+
+        // Prevent showing cached protected page after logout when user presses browser back
+        window.addEventListener('pageshow', (event) => {
+            const navEntry = performance.getEntriesByType('navigation')[0];
+            const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+            if (isBackForward && !isDemoMode) {
+                auth.onAuthStateChanged((user) => {
+                    if (!user) {
+                        window.location.replace('auth_login.html');
+                    }
+                });
+            }
+        });
+
+        let currentUser = null;
+        let userData = null;
+
+        function splitFullName(name) {
+            const cleanName = (name || '').trim().replace(/\s+/g, ' ');
+            if (!cleanName) {
+                return { firstName: '', lastName: '', fullName: '' };
+            }
+
+            const nameParts = cleanName.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+            return { firstName, lastName, fullName: cleanName };
+        }
+
+        function getDisplayName(userRecord, authUser) {
+            const firstName = (userRecord?.firstName || '').trim();
+            const lastName = (userRecord?.lastName || '').trim();
+            const combined = `${firstName} ${lastName}`.trim();
+
+            return combined
+                || (userRecord?.fullName || '').trim()
+                || (userRecord?.displayName || '').trim()
+                || (authUser?.displayName || '').trim()
+                || (authUser?.email ? authUser.email.split('@')[0] : 'User');
+        }
+
+        function setupDemoMode() {
+            const demoName = 'Demo User';
+            document.getElementById('userName').textContent = demoName;
+            document.getElementById('userEmail').textContent = 'demo@smartinterview.ai';
+            document.getElementById('welcomeName').textContent = demoName;
+            document.getElementById('userAvatar').textContent = 'D';
+            document.getElementById('totalInterviews').textContent = '12';
+            document.getElementById('avgScore').textContent = '87';
+            document.getElementById('totalTime').textContent = '340';
+
+            document.querySelector('.c27').textContent = 'Demo Mode: dashboard preview only. Interview start is disabled.';
+
+            const blockDemoInterview = (event) => {
+                event.preventDefault();
+                alert('This is demo mode. Please login/signup to start a real interview.');
+            };
+
+            const startInterviewNav = document.getElementById('startInterviewNav');
+            const startInterviewBtn = document.getElementById('startInterviewBtn');
+            if (startInterviewNav) {
+                startInterviewNav.addEventListener('click', blockDemoInterview);
+                startInterviewNav.style.opacity = '0.7';
+            }
+            if (startInterviewBtn) {
+                startInterviewBtn.onclick = blockDemoInterview;
+                startInterviewBtn.style.opacity = '0.7';
+                startInterviewBtn.title = 'Demo mode: interview disabled';
+            }
+
+            document.getElementById('recentInterviews').innerHTML = `
+                <div class="c116">
+                    <div class="c117">
+                        <span class="c118 material-symbols-outlined">description</span>
+                        <div>
+                            <h4 class="c119">Frontend Engineer</h4>
+                            <p class="c32">medium - 4/10/2026</p>
+                        </div>
+                    </div>
+                    <div class="c77">
+                        <p class="c120 status-done">Completed</p>
+                        <p class="c32">Score: 92%</p>
+                    </div>
+                </div>
+                <div class="c116">
+                    <div class="c117">
+                        <span class="c118 material-symbols-outlined">description</span>
+                        <div>
+                            <h4 class="c119">Backend Developer</h4>
+                            <p class="c32">hard - 4/08/2026</p>
+                        </div>
+                    </div>
+                    <div class="c77">
+                        <p class="c120 status-done">Completed</p>
+                        <p class="c32">Score: 81%</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Check authentication and load user data
+        if (isDemoMode) {
+            setupDemoMode();
+        } else {
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'auth_login.html';
+                return;
+            }
+
+            currentUser = user;
+            
+            try {
+                // Load user data from Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                } else {
+                    // Fallback if user document doesn't exist yet
+                    const nameParts = splitFullName(user.displayName || user.email.split('@')[0]);
+                    userData = {
+                        displayName: nameParts.fullName,
+                        fullName: nameParts.fullName,
+                        firstName: nameParts.firstName,
+                        lastName: nameParts.lastName,
+                        email: user.email
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                const nameParts = splitFullName(user.displayName || user.email.split('@')[0]);
+                userData = {
+                    displayName: nameParts.fullName,
+                    fullName: nameParts.fullName,
+                    firstName: nameParts.firstName,
+                    lastName: nameParts.lastName,
+                    email: user.email
+                };
+            }
+            
+            const displayName = getDisplayName(userData, user);
+            
+            document.getElementById('userName').textContent = displayName;
+            document.getElementById('userEmail').textContent = userData.email || user.email;
+            document.getElementById('welcomeName').textContent = displayName;
+            document.getElementById('userAvatar').textContent = (displayName.charAt(0) || 'U').toUpperCase();
+
+            // Load dashboard data
+            await loadDashboardData();
+        });
+        }
+
+        async function logout() {
+            const shouldLogout = await sisConfirm('Are you sure you want to logout?', {
+                title: 'Confirm Logout',
+                okText: 'Logout',
+                cancelText: 'Stay Logged In',
+                variant: 'danger'
+            });
+
+            if (!shouldLogout) {
+                return;
+            }
+
+            auth.signOut()
+                .then(() => {
+                    window.location.replace('landingpage.html');
+                })
+                .catch(() => {
+                    window.location.replace('landingpage.html');
+                });
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Get all interviews for current user
+                const snapshot = await db.collection('interviews')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                const interviews = [];
+                snapshot.forEach(doc => {
+                    interviews.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort by createdAt in JavaScript (avoids index requirement)
+                interviews.sort((a, b) => {
+                    const dateA = a.createdAt?.toDate() || new Date(a.startedAt || 0);
+                    const dateB = b.createdAt?.toDate() || new Date(b.startedAt || 0);
+                    return dateB - dateA; // desc order
+                });
+
+                // Calculate stats
+                const totalInterviews = interviews.length;
+                const completedInterviews = interviews.filter(i => i.status === 'completed');
+                const totalScore = completedInterviews.reduce((sum, i) => sum + (i.scorePercentage || 0), 0);
+                const avgScore = completedInterviews.length > 0 
+                    ? Math.round(totalScore / completedInterviews.length) 
+                    : 0;
+                const totalTime = interviews.reduce((sum, i) => sum + (i.duration || 0), 0);
+
+                // Update stats
+                document.getElementById('totalInterviews').textContent = totalInterviews;
+                document.getElementById('avgScore').textContent = avgScore;
+                document.getElementById('totalTime').textContent = totalTime;
+
+                // Display recent interviews
+                displayRecentInterviews(interviews.slice(0, 5));
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                document.getElementById('recentInterviews').innerHTML = `
+                    <div class="c113">
+                        <p>Error loading data: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayRecentInterviews(interviews) {
+            const container = document.getElementById('recentInterviews');
+
+            if (interviews.length === 0) {
+                container.innerHTML = `
+                    <div class="c114">
+                        <span class="c115 material-symbols-outlined">inbox</span>
+                        <p>No interviews yet. Start your first one!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = interviews.map(interview => {
+                const statusColor = interview.status === 'completed' ? 'status-done' : 'status-wait';
+                const statusText = interview.status === 'completed' ? 'Completed' : 'In Progress';
+                const date = interview.createdAt ? new Date(interview.createdAt.toDate()).toLocaleDateString() : 'N/A';
+                const score = interview.scorePercentage ? `${interview.scorePercentage}%` : 'N/A';
+
+                return `
+                    <div class="c116">
+                        <div class="c117">
+                            <span class="c118 material-symbols-outlined">description</span>
+                            <div>
+                                <h4 class="c119">${interview.role}</h4>
+                                <p class="c32">${interview.difficulty} - ${date}</p>
+                            </div>
+                        </div>
+                        <div class="c77">
+                            <p class="c120 ${statusColor}">${statusText}</p>
+                            <p class="c32">Score: ${score}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        console.log('Dashboard loaded');
+    </script>
+</body>
+</html>
+
+
+
+
+

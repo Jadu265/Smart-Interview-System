@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Interview Setup - Smart Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+</head>
+<body class="c1 setup-shell">
+    <div class="c2">
+        <!-- Sidebar -->
+        <aside class="c3">
+            <div class="c4">
+                <div class="c5">
+                    <div class="c96">
+                        <span class="c7 material-symbols-outlined">psychology</span>
+                    </div>
+                    <div>
+                        <h1 class="c8">Smart Interview</h1>
+                        <p class="c79">Candidate Portal</p>
+                    </div>
+                </div>
+                
+                <nav class="c10">
+                    <a href="auth_dashboard.html" class="c98">
+                        <span class="c12 material-symbols-outlined">dashboard</span>
+                        <span class="c13">Dashboard</span>
+                    </a>
+                    <a href="landingpage.html" class="c98">
+                        <span class="c12 material-symbols-outlined">home</span>
+                        <span class="c13">Home Page</span>
+                    </a>
+                    <a href="auth_interview_setup.html" class="c97">
+                        <span class="c12 material-symbols-outlined">play_circle</span>
+                        <span class="c13">Start Interview</span>
+                    </a>
+                    <a href="auth_history.html" class="c98">
+                        <span class="c12 material-symbols-outlined">history</span>
+                        <span class="c13">History</span>
+                    </a>
+                    <a href="auth_profile.html" class="c98">
+                        <span class="c12 material-symbols-outlined">person</span>
+                        <span class="c13">Profile</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="c15">
+                <div class="c99">
+                    <div class="c17">
+                        <div id="userAvatar" class="c100">
+                            U
+                        </div>
+                        <div class="c19">
+                            <p id="userName" class="c20">Loading...</p>
+                            <p id="userEmail" class="c101">...</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="c22">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                    <span class="c23">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="c24">
+            <div class="c140">
+                <!-- Header -->
+                <div class="c4">
+                    <h1 class="c26">Setup Your Interview</h1>
+                    <p id="setupSubtitle" class="c27">Configure your interview preferences before starting</p>
+                </div>
+
+                <div id="moduleInfoCard" class="c29 hidden" style="margin-bottom: 20px;">
+                    <h3 id="moduleInfoTitle" class="c106">Recommended Track</h3>
+                    <p id="moduleInfoDescription" class="c109"></p>
+                    <ul id="moduleInfoPoints" class="c329" style="margin-top: 10px;"></ul>
+                </div>
+
+                <div id="planUsageBanner" class="plan-usage-banner hidden"></div>
+
+                <!-- Setup Form -->
+                <div class="c141">
+                    <!-- Role Selection -->
+                    <div class="c4">
+                        <label class="c142">Job Role *</label>
+                        <input type="text" id="roleInput" placeholder="e.g., PHP Developer, Frontend Engineer..." class="c143">
+                        
+                        <div class="c144">
+                            <p class="c145">Popular roles:</p>
+                            <div class="c146">
+                                <button type="button" onclick="selectRole('PHP Developer')" class="c147 toggle-off">
+                                    PHP Developer
+                                </button>
+                                <button type="button" onclick="selectRole('Frontend Engineer')" class="c147 toggle-off">
+                                    Frontend Engineer
+                                </button>
+                                <button type="button" onclick="selectRole('Full Stack Developer')" class="c147 toggle-off">
+                                    Full Stack Developer
+                                </button>
+                                <button type="button" onclick="selectRole('Backend Developer')" class="c147 toggle-off">
+                                    Backend Developer
+                                </button>
+                                <button type="button" onclick="selectRole('Data Scientist')" class="c147 toggle-off">
+                                    Data Scientist
+                                </button>
+                                <button type="button" onclick="selectRole('DevOps Engineer')" class="c147 toggle-off">
+                                    DevOps Engineer
+                                </button>
+                                <button type="button" onclick="selectRole('Business Analyst')" class="c147 toggle-off">
+                                    Business Analyst
+                                </button>
+                                <button type="button" onclick="selectRole('Product Manager')" class="c147 toggle-off">
+                                    Product Manager
+                                </button>
+                                <button type="button" onclick="selectRole('HR Executive')" class="c147 toggle-off">
+                                    HR Executive
+                                </button>
+                                <button type="button" onclick="selectRole('Marketing Executive')" class="c147 toggle-off">
+                                    Marketing Executive
+                                </button>
+                                <button type="button" onclick="selectRole('Sales Executive')" class="c147 toggle-off">
+                                    Sales Executive
+                                </button>
+                                <button type="button" onclick="selectRole('Accounts/Finance Executive')" class="c147 toggle-off">
+                                    Accounts/Finance Executive
+                                </button>
+                                <button type="button" onclick="selectRole('Customer Support Executive')" class="c147 toggle-off">
+                                    Customer Support Executive
+                                </button>
+                                <button type="button" onclick="selectRole('Operations Executive')" class="c147 toggle-off">
+                                    Operations Executive
+                                </button>
+                                <button type="button" onclick="selectRole('QA Engineer')" class="c147 toggle-off">
+                                    QA Engineer
+                                </button>
+                                <button type="button" onclick="selectRole('IT Executive')" class="c147 toggle-off">
+                                    IT Executive
+                                </button>
+                                <button type="button" onclick="selectRole('UI/UX Designer')" class="c147 toggle-off">
+                                    UI/UX Designer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Level -->
+                    <div class="c4">
+                        <label class="c142">Difficulty Level *</label>
+                        <div class="c148">
+                                <button type="button" onclick="selectDifficulty('easy')" class="c149 diff-btn border-off">
+                                <span class="c150 material-symbols-outlined">sentiment_satisfied</span>
+                                <p class="c119">Easy</p>
+                                <p id="easyCount" class="c79">15 questions available</p>
+                            </button>
+                                <button type="button" onclick="selectDifficulty('medium')" class="c151 diff-btn border-off">
+                                <span class="c152 material-symbols-outlined">sentiment_neutral</span>
+                                <p class="c119">Medium</p>
+                                <p id="mediumCount" class="c79">30 questions available</p>
+                            </button>
+                                <button type="button" onclick="selectDifficulty('hard')" class="c149 diff-btn border-off">
+                                <span class="c153 material-symbols-outlined">sentiment_stressed</span>
+                                <p class="c119">Hard</p>
+                                <p id="hardCount" class="c79">40 questions available</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Duration -->
+                    <div class="c4">
+                        <label class="c142">Interview Duration</label>
+                        <select id="durationSelect" class="c154">
+                            <option value="20">20 Minutes</option>
+                            <option value="25">25 Minutes</option>
+                               <option value="1">1 Minute</option>
+                            <option value="30"selected>30 Minutes</option>
+                            <option value="35">35 Minutes</option>
+                            <option value="40">40 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                            <option value="50">50 Minutes</option>
+                            <option value="55">55 Minutes</option>
+                            <option value="60">60 Minutes (1 Hour)</option>
+                        </select>
+                    </div>
+
+                    <!-- Mode Toggle -->
+                    <div class="c4">
+                        <label class="c142">Interview Mode</label>
+                        <div class="c155">
+                            <div>
+                                <p class="c119">Mock Interview Mode</p>
+                                <p class="c32">Timed with realistic interview pressure</p>
+                            </div>
+                            <label class="c156">
+                                <input type="checkbox" id="modeToggle"checked class="sr-only peer">
+                                <div class="c157 peer"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Interview Type -->
+                    <div class="c4">
+                        <label class="c142">Start Interview Option *</label>
+                        <div class="c148">
+                            <button type="button" onclick="selectInterviewType('question-based', event)" class="c149 interview-type-btn border-on">
+                                <span class="c150 material-symbols-outlined">quiz</span>
+                                <p class="c119">MCQ / Writer Based</p>
+                                <p class="c79">Standard question-answer interview</p>
+                            </button>
+
+                            <button type="button" onclick="selectInterviewType('voice-live', event)" class="c149 interview-type-btn border-off">
+                                <span class="c152 material-symbols-outlined">mic</span>
+                                <p class="c119">Voice Live Interview</p>
+                                <p class="c79">Speak answers with voice assistant</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="c52">
+                        <button onclick="window.location.href='auth_dashboard.html'" class="c158">
+                            Cancel
+                        </button>
+                        <button onclick="startInterview()" id="startBtn" class="c159">
+                            <span id="startBtnText">Start Interview</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                            <span id="startLoader" class="hidden">
+                                <svg class="c160" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="c161" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="c162" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase Config -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_NEW_API_KEY_HERE",
+            authDomain: "smartinterview-d2ef2.firebaseapp.com",
+            databaseURL: "https://smartinterview-d2ef2-default-rtdb.firebaseio.com",
+            projectId: "smartinterview-d2ef2",
+            storageBucket: "smartinterview-d2ef2.firebasestorage.app",
+            messagingSenderId: "889760323914",
+            appId: "1:889760323914:web:83b0166175be22c32049b3",
+            measurementId: "G-HMGZH00Y5W"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Prevent showing cached protected page after logout when user presses browser back
+        window.addEventListener('pageshow', (event) => {
+            const navEntry = performance.getEntriesByType('navigation')[0];
+            const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+            if (isBackForward) {
+                auth.onAuthStateChanged((user) => {
+                    if (!user) {
+                        window.location.replace('auth_login.html');
+                    }
+                });
+            }
+        });
+
+        let currentUser = null;
+        let interviewsUsedCount = 0;
+        let planInterviewsUsedCount = 0;
+        let planInterviewLimit = null;
+        let subscriptionStartedAt = null;
+        let freeInterviewLimit = 10;
+        let userSubscriptionPlan = 'free';
+        let userSubscriptionStatus = 'inactive';
+
+        // Interview configuration
+        const config = {
+            role: '',
+            difficulty: 'medium',
+            duration: 30,
+            mode: 'mock',
+            interviewType: 'question-based'
+        };
+
+        const modulePresets = {
+            technical: {
+                title: 'Technical Rounds',
+                description: 'Focus on coding, problem solving, and technical depth with realistic practice flow.',
+                points: ['Live code-style questions', 'System and logic mindset'],
+                role: 'Frontend Engineer',
+                difficulty: 'medium',
+                interviewType: 'question-based'
+            },
+            hr: {
+                title: 'HR & Culture',
+                description: 'Practice confidence, communication, and role-fit conversations used in HR screening.',
+                points: ['Negotiation and confidence cues', 'Culture-fit response training'],
+                role: 'HR Executive',
+                difficulty: 'easy',
+                interviewType: 'question-based'
+            },
+            behavioral: {
+                title: 'Behavioral Questions',
+                description: 'Sharpen STAR-based storytelling and situational answer quality with guided prompts.',
+                points: ['STAR-oriented answer framing', 'Tone and clarity feedback focus'],
+                role: 'Business Analyst',
+                difficulty: 'medium',
+                interviewType: 'voice-live'
+            }
+        };
+
+        const rolePresets = {
+            developer: { label: 'Software Developer', role: 'Full Stack Developer', difficulty: 'medium' },
+            marketing: { label: 'Marketing Manager', role: 'Marketing Executive', difficulty: 'easy' },
+            product: { label: 'Product Manager', role: 'Product Manager', difficulty: 'medium' },
+            analyst: { label: 'Data Analyst', role: 'Business Analyst', difficulty: 'medium' }
+        };
+
+        // Check authentication
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'auth_login.html';
+                return;
+            }
+
+            currentUser = user;
+            
+            // Load user data from Firestore to get signup name
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                let displayName = user.displayName || user.email.split('@')[0];
+                if (userDoc.exists) {
+                    displayName = userDoc.data().displayName || displayName;
+                }
+                document.getElementById('userName').textContent = displayName;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userAvatar').textContent = displayName[0].toUpperCase();
+
+                await refreshUsageAndPlan();
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                document.getElementById('userName').textContent = user.displayName || 'User';
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userAvatar').textContent = (user.displayName || user.email || 'U')[0].toUpperCase();
+                await refreshUsageAndPlan();
+            }
+        });
+
+        function isPaidPlanActive() {
+            return userSubscriptionStatus === 'active' && ['monthly', 'yearly', 'unlimited'].includes(userSubscriptionPlan);
+        }
+
+        function isUnlimitedPaidPlanActive() {
+            return userSubscriptionStatus === 'active' && ['yearly', 'unlimited'].includes(userSubscriptionPlan);
+        }
+
+        function getMonthlyInterviewLimit() {
+            const parsedLimit = Number(planInterviewLimit);
+            if (Number.isFinite(parsedLimit) && parsedLimit > 0) {
+                return parsedLimit;
+            }
+            return 20;
+        }
+
+        function renderPlanUsageBanner() {
+            const banner = document.getElementById('planUsageBanner');
+            if (!banner) {
+                return;
+            }
+
+            const freeLeft = Math.max(0, freeInterviewLimit - interviewsUsedCount);
+
+            if (isUnlimitedPaidPlanActive()) {
+                banner.className = 'plan-usage-banner plan-usage-banner-pro';
+                banner.innerHTML = `<span class="material-symbols-outlined">workspace_premium</span> Premium plan active: <strong>${userSubscriptionPlan}</strong> - unlimited interviews unlocked.`;
+                return;
+            }
+
+            if (isPaidPlanActive() && userSubscriptionPlan === 'monthly') {
+                const monthlyLimit = getMonthlyInterviewLimit();
+                const monthlyLeft = Math.max(0, monthlyLimit - planInterviewsUsedCount);
+                banner.className = 'plan-usage-banner plan-usage-banner-pro';
+                banner.innerHTML = `<span class="material-symbols-outlined">workspace_premium</span> Monthly plan active: <strong>${monthlyLeft}</strong> interview${monthlyLeft === 1 ? '' : 's'} left out of ${monthlyLimit}.`;
+                return;
+            }
+
+            banner.className = 'plan-usage-banner plan-usage-banner-free';
+            banner.innerHTML = `<span class="material-symbols-outlined">bolt</span> Free tier: <strong>${freeLeft}</strong> interview${freeLeft === 1 ? '' : 's'} left out of ${freeInterviewLimit}.`;
+        }
+
+        async function refreshUsageAndPlan() {
+            if (!currentUser) {
+                return;
+            }
+
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data() || {};
+                    freeInterviewLimit = Number(data.freeInterviewLimit || 10);
+                    userSubscriptionPlan = data.subscriptionPlan || 'free';
+                    userSubscriptionStatus = data.subscriptionStatus || 'inactive';
+                    planInterviewLimit = data.planInterviewLimit ?? null;
+                    subscriptionStartedAt = data.subscriptionStartedAt || null;
+                } else {
+                    freeInterviewLimit = 10;
+                    userSubscriptionPlan = 'free';
+                    userSubscriptionStatus = 'inactive';
+                    planInterviewLimit = null;
+                    subscriptionStartedAt = null;
+                }
+
+                const interviewSnapshot = await db.collection('interviews')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+                interviewsUsedCount = interviewSnapshot.size;
+                planInterviewsUsedCount = 0;
+
+                if (isPaidPlanActive() && userSubscriptionPlan === 'monthly') {
+                    const monthlyStartTs = Date.parse(subscriptionStartedAt || '');
+                    const hasValidStart = Number.isFinite(monthlyStartTs);
+                    planInterviewsUsedCount = interviewSnapshot.docs.filter((doc) => {
+                        const data = doc.data() || {};
+                        if ((data.planAtStart || 'free') !== 'monthly') {
+                            return false;
+                        }
+                        if (!hasValidStart) {
+                            return true;
+                        }
+                        const startedTs = Date.parse(data.startedAt || '');
+                        return Number.isFinite(startedTs) && startedTs >= monthlyStartTs;
+                    }).length;
+                }
+            } catch (error) {
+                console.error('Failed to load usage/subscription:', error);
+                freeInterviewLimit = 10;
+                interviewsUsedCount = 0;
+                planInterviewsUsedCount = 0;
+                planInterviewLimit = null;
+                subscriptionStartedAt = null;
+                userSubscriptionPlan = 'free';
+                userSubscriptionStatus = 'inactive';
+            }
+
+            renderPlanUsageBanner();
+        }
+
+        async function ensureInterviewAccess() {
+            await refreshUsageAndPlan();
+            if (isUnlimitedPaidPlanActive()) {
+                return true;
+            }
+
+            if (isPaidPlanActive() && userSubscriptionPlan === 'monthly') {
+                const monthlyLimit = getMonthlyInterviewLimit();
+                if (planInterviewsUsedCount < monthlyLimit) {
+                    return true;
+                }
+
+                const shouldUpgradeMonthly = await sisConfirm(
+                    `Your monthly plan limit (${monthlyLimit} interviews) is reached. Upgrade to Yearly or Unlimited for unrestricted interviews.`,
+                    {
+                        title: 'Monthly Limit Reached',
+                        okText: 'Upgrade Plan',
+                        cancelText: 'Later'
+                    }
+                );
+
+                if (shouldUpgradeMonthly) {
+                    window.location.href = 'landingpage.html?openPricing=1#pricing';
+                }
+
+                return false;
+            }
+
+            if (interviewsUsedCount < freeInterviewLimit) {
+                return true;
+            }
+
+            const shouldUpgrade = await sisConfirm(
+                `Your free ${freeInterviewLimit} interviews are finished. Upgrade to Monthly, Yearly, or Unlimited plan to continue.`,
+                {
+                    title: 'Free Limit Reached',
+                    okText: 'Upgrade Now',
+                    cancelText: 'Later'
+                }
+            );
+
+            if (shouldUpgrade) {
+                window.location.href = 'landingpage.html?openPricing=1#pricing';
+            }
+
+            return false;
+        }
+
+        async function logout() {
+            const shouldLogout = await sisConfirm('Are you sure you want to logout?', {
+                title: 'Confirm Logout',
+                okText: 'Logout',
+                cancelText: 'Stay Logged In',
+                variant: 'danger'
+            });
+
+            if (!shouldLogout) {
+                return;
+            }
+
+            auth.signOut()
+                .then(() => {
+                    window.location.replace('landingpage.html');
+                })
+                .catch(() => {
+                    window.location.replace('landingpage.html');
+                });
+        }
+
+        // Role selection
+        function selectRole(role, clickEvent) {
+            console.log('Role selected:', role);
+            document.getElementById('roleInput').value = role;
+            config.role = role;
+
+            // Visual feedback
+            document.querySelectorAll('.c147').forEach(btn => {
+                btn.classList.remove('toggle-on');
+                btn.classList.add('toggle-off');
+            });
+            
+            const targetBtn =
+                (clickEvent && clickEvent.currentTarget) ||
+                (typeof event !== 'undefined' && event.target ? event.target.closest('.c147') : null) ||
+                Array.from(document.querySelectorAll('.c147')).find(btn => btn.textContent.trim().toLowerCase() === role.toLowerCase());
+
+            if (targetBtn) {
+                targetBtn.classList.remove('toggle-off');
+                targetBtn.classList.add('toggle-on');
+            }
+            
+            // Update question counts based on role
+            updateQuestionCounts(role);
+        }
+        
+        // Update question counts based on selected role
+        function updateQuestionCounts(role) {
+            // Question availability by role
+            const questionAvailability = {
+                "PHP Developer": { easy: 15, medium: 30, hard: 40 },
+                "Frontend Engineer": { easy: 15, medium: 30, hard: 40 },
+                "Full Stack Developer": { easy: 15, medium: 30, hard: 40 },
+                "Backend Developer": { easy: 15, medium: 30, hard: 40 },
+                "Data Scientist": { easy: 15, medium: 30, hard: 40 },
+                "DevOps Engineer": { easy: 15, medium: 30, hard: 40 },
+                "Business Analyst": { easy: 15, medium: 30, hard: 40 },
+                "Product Manager": { easy: 15, medium: 30, hard: 40 },
+                "HR Executive": { easy: 15, medium: 30, hard: 40 },
+                "Marketing Executive": { easy: 15, medium: 30, hard: 40 },
+                "Sales Executive": { easy: 15, medium: 30, hard: 40 },
+                "Accounts/Finance Executive": { easy: 15, medium: 30, hard: 40 },
+                "Customer Support Executive": { easy: 15, medium: 30, hard: 40 },
+                "Operations Executive": { easy: 15, medium: 30, hard: 40 },
+                "QA Engineer": { easy: 15, medium: 30, hard: 40 },
+                "IT Executive": { easy: 15, medium: 30, hard: 40 },
+                "UI/UX Designer": { easy: 15, medium: 30, hard: 40 }
+            };
+            
+            const counts = questionAvailability[role];
+            
+            if (counts) {
+                document.getElementById('easyCount').textContent = `${counts.easy} questions available`;
+                document.getElementById('mediumCount').textContent = `${counts.medium} questions available`;
+                document.getElementById('hardCount').textContent = `${counts.hard} questions available`;
+                console.log(`Updated question counts for ${role}:`, counts);
+            } else {
+                // Default counts if role not found
+                document.getElementById('easyCount').textContent = '15 questions available';
+                document.getElementById('mediumCount').textContent = '30 questions available';
+                document.getElementById('hardCount').textContent = '40 questions available';
+            }
+        }
+
+        // Difficulty selection
+        function selectDifficulty(level, clickEvent) {
+            console.log('Difficulty selected:', level);
+            config.difficulty = level;
+
+            // Visual feedback
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.classList.remove('border-on');
+                btn.classList.add('border-off');
+            });
+            
+            const targetBtn =
+                (clickEvent && clickEvent.currentTarget) ||
+                (typeof event !== 'undefined' && event.target ? event.target.closest('.diff-btn') : null) ||
+                Array.from(document.querySelectorAll('.diff-btn')).find(btn => (btn.getAttribute('onclick') || '').includes(`'${level}'`));
+
+            if (targetBtn) {
+                targetBtn.classList.remove('border-off');
+                targetBtn.classList.add('border-on');
+            }
+        }
+
+        // Interview type selection
+        function selectInterviewType(type, clickEvent) {
+            config.interviewType = type;
+
+            document.querySelectorAll('.interview-type-btn').forEach(btn => {
+                btn.classList.remove('border-on');
+                btn.classList.add('border-off');
+            });
+
+            if (clickEvent && clickEvent.currentTarget) {
+                clickEvent.currentTarget.classList.remove('border-off');
+                clickEvent.currentTarget.classList.add('border-on');
+            } else {
+                const targetBtn = Array.from(document.querySelectorAll('.interview-type-btn'))
+                    .find(btn => (btn.getAttribute('onclick') || '').includes(`'${type}'`));
+                if (targetBtn) {
+                    targetBtn.classList.remove('border-off');
+                    targetBtn.classList.add('border-on');
+                }
+            }
+        }
+
+        function renderModuleInfo(preset, titleOverride) {
+            const card = document.getElementById('moduleInfoCard');
+            const title = document.getElementById('moduleInfoTitle');
+            const description = document.getElementById('moduleInfoDescription');
+            const points = document.getElementById('moduleInfoPoints');
+
+            title.textContent = titleOverride || preset.title;
+            description.textContent = preset.description;
+            points.innerHTML = preset.points
+                .map(point => `<li class="c330"><span class="c331 material-symbols-outlined">done</span> ${point}</li>`)
+                .join('');
+
+            card.classList.remove('hidden');
+        }
+
+        function applyLandingPreset() {
+            const params = new URLSearchParams(window.location.search);
+            const moduleKey = (params.get('module') || '').toLowerCase();
+            const roleKey = (params.get('role') || '').toLowerCase();
+
+            const modulePreset = modulePresets[moduleKey];
+            const rolePreset = rolePresets[roleKey];
+
+            if (!modulePreset && !rolePreset) {
+                return;
+            }
+
+            if (modulePreset) {
+                renderModuleInfo(modulePreset);
+                document.getElementById('setupSubtitle').textContent = `${modulePreset.title} preset loaded. You can still customize everything.`;
+                selectRole(modulePreset.role);
+                selectDifficulty(modulePreset.difficulty);
+                selectInterviewType(modulePreset.interviewType);
+            }
+
+            if (rolePreset) {
+                const roleOnlyPreset = {
+                    title: rolePreset.label,
+                    description: `Focused setup for ${rolePreset.label}.`,
+                    points: ['Role-specific recommended defaults', 'Quick start with editable options']
+                };
+
+                renderModuleInfo(roleOnlyPreset, `${rolePreset.label} Track`);
+                document.getElementById('setupSubtitle').textContent = `${rolePreset.label} preset loaded. You can still customize everything.`;
+                selectRole(rolePreset.role);
+                selectDifficulty(rolePreset.difficulty);
+            }
+        }
+
+        // Update config on input changes
+        document.getElementById('roleInput').addEventListener('input', (e) => {
+            config.role = e.target.value;
+        });
+
+        document.getElementById('durationSelect').addEventListener('change', (e) => {
+            config.duration = parseInt(e.target.value);
+        });
+
+        document.getElementById('modeToggle').addEventListener('change', (e) => {
+            config.mode = e.target.checked ? 'mock' : 'practice';
+        });
+
+        applyLandingPreset();
+
+        // Start interview
+        async function startInterview() {
+            console.log('Starting interview with config:', config);
+            
+            // Validation
+            if (!config.role || config.role.trim() === '') {
+                alert('Please enter or select a job role');
+                document.getElementById('roleInput').focus();
+                return;
+            }
+
+            if (!currentUser) {
+                alert('Please wait for authentication...');
+                return;
+            }
+
+            const hasAccess = await ensureInterviewAccess();
+            if (!hasAccess) {
+                return;
+            }
+
+            const startBtn = document.getElementById('startBtn');
+            const startBtnText = document.getElementById('startBtnText');
+            const startLoader = document.getElementById('startLoader');
+            
+            startBtn.disabled = true;
+            startBtnText.classList.add('hidden');
+            startLoader.classList.remove('hidden');
+
+            try {
+                // Calculate number of questions based on difficulty
+                let questionCount;
+                if (config.difficulty === 'easy') {
+                    questionCount = 15;
+                } else if (config.difficulty === 'medium') {
+                    questionCount = 30;
+                } else if (config.difficulty === 'hard') {
+                    questionCount = 40;
+                } else {
+                    questionCount = 15; // default
+                }
+                
+                // Create interview session
+                const interviewData = {
+                    userId: currentUser.uid,
+                    userName: currentUser.displayName || currentUser.email,
+                    userEmail: currentUser.email,
+                    planAtStart: isPaidPlanActive() ? userSubscriptionPlan : 'free',
+                    role: config.role.trim(),
+                    difficulty: config.difficulty,
+                    duration: config.duration,
+                    mode: config.mode,
+                    interviewType: config.interviewType,
+                    questionCount: questionCount,
+                    status: 'in-progress',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    startedAt: new Date().toISOString(),
+                    currentQuestionIndex: 0,
+                    answers: [],
+                    score: 0,
+                    totalScore: 0
+                };
+
+                console.log('Creating interview session...');
+                const docRef = await db.collection('interviews').add(interviewData);
+                
+                console.log('Interview created with ID:', docRef.id);
+
+                // Keep a local pointer to the active session in case query params are dropped.
+                sessionStorage.setItem('activeInterviewSessionId', docRef.id);
+                localStorage.setItem('activeInterviewSessionId', docRef.id);
+                
+                // Navigate to live interview
+                window.location.href = `auth_live_interview.html?session=${docRef.id}`;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Better error handling for permission issues
+                if (error.code === 'permission-denied' || error.message.includes('permission')) {
+                    // Show user-friendly error and redirect to fix guide
+                    await sisAlert('FIREBASE PERMISSION ERROR!\n\n' +
+                          'Opening step-by-step fix guide...\n\n' +
+                          'This will take only 2 minutes to fix!', {
+                              title: 'Permission Error',
+                              variant: 'danger'
+                          });
+                    
+                    // Redirect to interactive fix guide
+                    window.location.href = 'firebase_fix_guide.html';
+                } else {
+                    // Other errors
+                    alert('Failed to create interview session: ' + error.message);
+                }
+                
+                startBtn.disabled = false;
+                startBtnText.classList.remove('hidden');
+                startLoader.classList.add('hidden');
+            }
+        }
+
+        console.log('Interview Setup page loaded');
+    </script>
+</body>
+</html>
+
+
+
+
+

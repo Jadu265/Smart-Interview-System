@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Interview History - Smart Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+    </head>
+<body class="c1 history-shell">
+    <div class="c2">
+        <!-- Sidebar -->
+        <aside class="c3">
+            <div class="c4">
+                <div class="c5">
+                    <div class="c96">
+                        <span class="c7 material-symbols-outlined">psychology</span>
+                    </div>
+                    <div>
+                        <h1 class="c8">Smart Interview</h1>
+                        <p class="c79">Candidate Portal</p>
+                    </div>
+                </div>
+                
+                <nav class="c10">
+                    <a href="auth_dashboard.html" class="c98">
+                        <span class="c12 material-symbols-outlined">dashboard</span>
+                        <span class="c13">Dashboard</span>
+                    </a>
+                    <a href="landingpage.html" class="c98">
+                        <span class="c12 material-symbols-outlined">home</span>
+                        <span class="c13">Home Page</span>
+                    </a>
+                    <a href="auth_interview_setup.html" class="c98">
+                        <span class="c12 material-symbols-outlined">play_circle</span>
+                        <span class="c13">Start Interview</span>
+                    </a>
+                    <a href="auth_history.html" class="c97">
+                        <span class="c12 material-symbols-outlined">history</span>
+                        <span class="c13">History</span>
+                    </a>
+                    <a href="auth_profile.html" class="c98">
+                        <span class="c12 material-symbols-outlined">person</span>
+                        <span class="c13">Profile</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="c15">
+                <div class="c99">
+                    <div class="c17">
+                        <div id="userAvatar" class="c100">
+                           U
+                        </div>
+                        <div class="c19">
+                            <p id="userName" class="c20">Loading...</p>
+                            <p id="userEmail" class="c101">...</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="c22">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                    <span class="c23">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="c24">
+            <div class="c102">
+                <!-- Header -->
+                <div class="c4">
+                    <h1 class="c26">Interview History</h1>
+                    <p class="c27">View and review your past interviews</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="c38">
+                    <div class="c121">
+                        <div>
+                            <label class="c122">Status</label>
+                            <select id="statusFilter" onchange="applyFilters()" class="c123">
+                                <option value="all">All Status</option>
+                                <option value="completed">Completed</option>
+                                <option value="in-progress">In Progress</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="c122">Difficulty</label>
+                            <select id="difficultyFilter" onchange="applyFilters()" class="c123">
+                                <option value="all">All Levels</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="c122">Sort By</label>
+                            <select id="sortFilter" onchange="applyFilters()" class="c123">
+                                <option value="recent">Most Recent</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="score-high">Highest Score</option>
+                                <option value="score-low">Lowest Score</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview List -->
+                <div id="interviewList" class="c124">
+                    <div class="c125">
+                        <span class="c126 material-symbols-outlined">hourglass_empty</span>
+                        <p class="c27">Loading interviews...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_NEW_API_KEY_HERE",
+            authDomain: "smartinterview-d2ef2.firebaseapp.com",
+            projectId: "smartinterview-d2ef2",
+            storageBucket: "smartinterview-d2ef2.firebasestorage.app",
+            messagingSenderId: "889760323914",
+            appId: "1:889760323914:web:83b0166175be22c32049b3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Prevent showing cached protected page after logout when user presses browser back
+        window.addEventListener('pageshow', (event) => {
+            const navEntry = performance.getEntriesByType('navigation')[0];
+            const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+            if (isBackForward) {
+                auth.onAuthStateChanged((user) => {
+                    if (!user) {
+                        window.location.replace('auth_login.html');
+                    }
+                });
+            }
+        });
+
+        let currentUser = null;
+        let allInterviews = [];
+        let userData = null;
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'auth_login.html';
+                return;
+            }
+
+            currentUser = user;
+            
+            // Load user data from Firestore to get signup name
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                } else {
+                    userData = {
+                        displayName: user.displayName || user.email.split('@')[0],
+                        email: user.email
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                userData = {
+                    displayName: user.displayName || user.email.split('@')[0],
+                    email: user.email
+                };
+            }
+            
+            const displayName = userData.displayName || user.displayName || user.email.split('@')[0];
+            document.getElementById('userName').textContent = displayName;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userAvatar').textContent = displayName[0].toUpperCase();
+
+            await loadInterviews();
+        });
+
+        async function logout() {
+            const shouldLogout = await sisConfirm('Are you sure you want to logout?', {
+                title: 'Confirm Logout',
+                okText: 'Logout',
+                cancelText: 'Stay Logged In',
+                variant: 'danger'
+            });
+
+            if (!shouldLogout) {
+                return;
+            }
+
+            auth.signOut()
+                .then(() => {
+                    window.location.replace('landingpage.html');
+                })
+                .catch(() => {
+                    window.location.replace('landingpage.html');
+                });
+        }
+
+        async function loadInterviews() {
+            try {
+                const snapshot = await db.collection('interviews')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                allInterviews = [];
+                snapshot.forEach(doc => {
+                    allInterviews.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort by createdAt in JavaScript (avoids index requirement)
+                allInterviews.sort((a, b) => {
+                    const dateA = a.createdAt?.toDate() || new Date(a.startedAt || 0);
+                    const dateB = b.createdAt?.toDate() || new Date(b.startedAt || 0);
+                    return dateB - dateA; // desc order
+                });
+
+                applyFilters();
+
+            } catch (error) {
+                console.error('Error loading interviews:', error);
+                document.getElementById('interviewList').innerHTML = `
+                    <div class="c127">
+                        <p>Error loading interviews: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const sortFilter = document.getElementById('sortFilter').value;
+
+            let filtered = [...allInterviews];
+
+            // Apply filters
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(i => i.status === statusFilter);
+            }
+            if (difficultyFilter !== 'all') {
+                filtered = filtered.filter(i => i.difficulty === difficultyFilter);
+            }
+
+            // Apply sorting
+            filtered.sort((a, b) => {
+                switch (sortFilter) {
+                    case 'recent':
+                        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+                    case 'oldest':
+                        return (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0);
+                    case 'score-high':
+                        return (b.scorePercentage || 0) - (a.scorePercentage || 0);
+                    case 'score-low':
+                        return (a.scorePercentage || 0) - (b.scorePercentage || 0);
+                    default:
+                        return 0;
+                }
+            });
+
+            displayInterviews(filtered);
+        }
+
+        function displayInterviews(interviews) {
+            const container = document.getElementById('interviewList');
+
+            if (interviews.length === 0) {
+                container.innerHTML = `
+                    <div class="c125">
+                        <span class="c126 material-symbols-outlined">inbox</span>
+                        <p class="c109">No interviews found</p>
+                        <button onclick="window.location.href='auth_interview_setup.html'" class="c128">
+                            Start Your First Interview
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = interviews.map(interview => {
+                const date = interview.createdAt ? new Date(interview.createdAt.toDate()).toLocaleDateString() : 'N/A';
+                const time = interview.createdAt ? new Date(interview.createdAt.toDate()).toLocaleTimeString() : '';
+                const score = interview.scorePercentage || 0;
+                const status = interview.status || 'unknown';
+                
+                const statusColors = {
+                    'completed': 'hist-done',
+                    'in-progress': 'hist-wait',
+                    'unknown': 'hist-unk'
+                };
+
+                const difficultyColors = {
+                    'easy': 'diff-easy',
+                    'medium': 'diff-med',
+                    'hard': 'diff-hard'
+                };
+
+                const statusColor = statusColors[status] || statusColors['unknown'];
+                const difficultyColor = difficultyColors[interview.difficulty] || 'diff-unk';
+
+                return `
+                    <div class="c129">
+                        <div class="c130">
+                            <div class="c76">
+                                <div class="c131">
+                                    <h3 class="c39">${interview.role}</h3>
+                                    <span class="c132 ${difficultyColor}">
+                                        ${interview.difficulty}
+                                    </span>
+                                </div>
+                                <p class="c32">${date} at ${time}</p>
+                            </div>
+                            <div class="c77">
+                                <div class="c133 ${statusColor}">
+                                    ${status === 'completed' ? 'Completed' : 'In Progress'}
+                                </div>
+                                ${status === 'completed' ? `
+                                    <p class="c134">${score}%</p>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        ${status === 'completed' ? `
+                        <div class="c135">
+                            <div>
+                                <p class="c136">Score</p>
+                                <p class="c119">${interview.score || 0}/${interview.totalScore || 0}</p>
+                            </div>
+                            <div>
+                                <p class="c136">Time Taken</p>
+                                <p class="c119">${interview.timeTaken || 0} min</p>
+                            </div>
+                            <div>
+                                <p class="c136">Attempted</p>
+                                <p class="c119">${interview.questionsAttempted || 0}/${interview.totalQuestions || 0}</p>
+                            </div>
+                            <div>
+                                <p class="c136">Mode</p>
+                                <p class="c119">${interview.mode || 'N/A'}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="c137">
+                            ${status === 'completed' ? `
+                                <button onclick="window.location.href='auth_result.html?session=${interview.id}'" class="c138">
+                                    View Details
+                                </button>
+                            ` : `
+                                <button onclick="window.location.href='auth_live_interview.html?session=${interview.id}'" class="c138">
+                                    Continue Interview
+                                </button>
+                            `}
+                            <button onclick="deleteInterview('${interview.id}')" class="c139">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function deleteInterview(id) {
+            const shouldDelete = await sisConfirm('Are you sure you want to delete this interview?', {
+                title: 'Delete Interview',
+                okText: 'Delete',
+                cancelText: 'Keep'
+            });
+
+            if (!shouldDelete) {
+                return;
+            }
+
+            try {
+                await db.collection('interviews').doc(id).delete();
+                allInterviews = allInterviews.filter(i => i.id !== id);
+                applyFilters();
+            } catch (error) {
+                alert('Failed to delete interview: ' + error.message);
+            }
+        }
+
+        console.log('History page loaded');
+    </script>
+</body>
+</html>
+
+
+
+
+

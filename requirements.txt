@@ -1,0 +1,5 @@
+# This is a requirements.txt file for Python dependencies.
+# Since this project is primarily Node.js and PHP/Laravel, this file is created as requested.
+# If you plan to add Python components, list your dependencies here, e.g.:
+# flask==2.0.1
+# requests==2.25.1

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>My Profile - Smart Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+    </head>
+<body class="c1 profile-shell">
+    <div class="c2">
+        <!-- Sidebar -->
+        <aside class="c3">
+            <div class="c4">
+                <div class="c5">
+                    <div class="c96">
+                        <span class="c7 material-symbols-outlined">psychology</span>
+                    </div>
+                    <div>
+                        <h1 class="c8">Smart Interview</h1>
+                        <p class="c79">Candidate Portal</p>
+                    </div>
+                </div>
+                
+                <nav class="c10">
+                    <a href="auth_dashboard.html" class="c98">
+                        <span class="c12 material-symbols-outlined">dashboard</span>
+                        <span class="c13">Dashboard</span>
+                    </a>
+                    <a href="landingpage.html" class="c98">
+                        <span class="c12 material-symbols-outlined">home</span>
+                        <span class="c13">Home Page</span>
+                    </a>
+                    <a href="auth_interview_setup.html" class="c98">
+                        <span class="c12 material-symbols-outlined">play_circle</span>
+                        <span class="c13">Start Interview</span>
+                    </a>
+                    <a href="auth_history.html" class="c98">
+                        <span class="c12 material-symbols-outlined">history</span>
+                        <span class="c13">History</span>
+                    </a>
+                    <a href="auth_profile.html" class="c97">
+                        <span class="c12 material-symbols-outlined">person</span>
+                        <span class="c13">Profile</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="c15">
+                <div class="c99">
+                    <div class="c17">
+                        <div id="sidebarAvatar" class="c100">
+                            U
+                        </div>
+                        <div class="c19">
+                            <p id="sidebarName" class="c20">Loading...</p>
+                            <p id="sidebarEmail" class="c101">...</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="c22">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                    <span class="c23">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="c24">
+            <div class="c140">
+                <!-- Header -->
+                <div class="c4">
+                    <h1 class="c26">My Profile</h1>
+                    <p class="c27">Manage your account settings and preferences</p>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="c218">
+                    <div class="c219">
+                        <!-- Profile Picture -->
+                        <div class="c220">
+                            <div id="profileAvatar" class="c221">
+                                U
+                            </div>
+                            <button onclick="uploadPhoto()" class="c222">
+                                <span class="c23 material-symbols-outlined">photo_camera</span>
+                                Change Photo
+                            </button>
+                            <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+                        </div>
+
+                        <!-- Profile Info -->
+                        <div class="c76">
+                            <h2 id="profileName" class="c223">Loading...</h2>
+                            <p id="profileEmail" class="c109">...</p>
+                            
+                            <div class="c224">
+                                <div class="c225">
+                                    <span class="c226 material-symbols-outlined">calendar_today</span>
+                                    <span class="c23">Joined: <span id="joinedDate">-</span></span>
+                                </div>
+                                <div class="c225">
+                                    <span class="c226 material-symbols-outlined">verified</span>
+                                    <span class="c23">Email: <span id="emailVerified">Not Verified</span></span>
+                                </div>
+                            </div>
+
+                            <button onclick="toggleEditMode()" id="editBtn" class="c227">
+                                <span class="c23 material-symbols-outlined">edit</span>
+                                Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="c65">
+                    <div class="c29">
+                        <div class="c131">
+                            <div class="c228">
+                                <span class="c229 material-symbols-outlined">quiz</span>
+                            </div>
+                            <div>
+                                <p class="c32">Total Interviews</p>
+                                <p id="totalInterviews" class="c134">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="c29">
+                        <div class="c131">
+                            <div class="c230">
+                                <span class="c231 material-symbols-outlined">task_alt</span>
+                            </div>
+                            <div>
+                                <p class="c32">Completed</p>
+                                <p id="completedInterviews" class="c134">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="c29">
+                        <div class="c131">
+                            <div class="c232">
+                                <span class="c233 material-symbols-outlined">trending_up</span>
+                            </div>
+                            <div>
+                                <p class="c32">Average Score</p>
+                                <p id="avgScore" class="c134">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Details Form -->
+                <div class="c218">
+                    <h3 class="c234">
+                        <span class="c226 material-symbols-outlined">badge</span>
+                        Personal Information
+                    </h3>
+
+                    <form id="profileForm" class="c235">
+                        <!-- Display Name -->
+                        <div>
+                            <label class="c236">Full Name</label>
+                            <input type="text" id="displayName" class="c237" placeholder="Enter your full name"disabled>
+                        </div>
+
+                        <!-- Phone -->
+                        <div>
+                            <label class="c236">Phone Number</label>
+                            <input type="tel" id="phone" class="c237" placeholder="Enter your phone number"disabled>
+                        </div>
+
+                        <!-- Bio -->
+                        <div>
+                            <label class="c236">Bio</label>
+                            <textarea id="bio" rows="4" class="c237" placeholder="Tell us about yourself..."disabled></textarea>
+                        </div>
+
+                        <!-- Skills -->
+                        <div>
+                            <label class="c236">Skills (comma separated)</label>
+                            <input type="text" id="skills" class="c237" placeholder="e.g., JavaScript, React, Node.js, Python"disabled>
+                        </div>
+
+                        <!-- Save/Cancel Buttons (Hidden initially) -->
+                        <div id="editActions" class="c52 hidden">
+                            <button type="submit" class="c238">
+                                <span class="material-symbols-outlined">save</span>
+                                Save Changes
+                            </button>
+                            <button type="button" onclick="cancelEdit()" class="c239">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Change Password -->
+                <div class="c218">
+                    <h3 class="c234">
+                        <span class="c226 material-symbols-outlined">lock</span>
+                        Change Password
+                    </h3>
+
+                    <form id="passwordForm" class="c235">
+                        <div>
+                            <label class="c236">Current Password</label>
+                            <input type="password" id="currentPassword" class="c154" placeholder="Enter current password">
+                        </div>
+
+                        <div>
+                            <label class="c236">New Password</label>
+                            <input type="password" id="newPassword" class="c154" placeholder="Enter new password">
+                        </div>
+
+                        <div>
+                            <label class="c236">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="c154" placeholder="Confirm new password">
+                        </div>
+
+                        <button type="submit" class="c238">
+                            <span class="material-symbols-outlined">key</span>
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="c240">
+                    <h3 class="c241">
+                        <span class="material-symbols-outlined">warning</span>
+                        Danger Zone
+                    </h3>
+                    <p class="c109">Once you delete your account, there is no going back. Please be certain.</p>
+                    <button onclick="deleteAccount()" class="c242">
+                        <span class="material-symbols-outlined">delete_forever</span>
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="c243 hidden">
+        <div class="c244">
+            <div class="spinner"></div>
+            <p class="c245">Processing...</p>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script>
+        let isEditMode = false;
+        let currentUserData = null;
+
+        function splitFullName(name) {
+            const cleanName = (name || '').trim().replace(/\s+/g, ' ');
+            if (!cleanName) {
+                return { firstName: '', lastName: '', fullName: '' };
+            }
+
+            const nameParts = cleanName.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+            return { firstName, lastName, fullName: cleanName };
+        }
+
+        function getDisplayName(userRecord, authUser) {
+            const firstName = (userRecord?.firstName || '').trim();
+            const lastName = (userRecord?.lastName || '').trim();
+            const combined = `${firstName} ${lastName}`.trim();
+
+            return combined
+                || (userRecord?.fullName || '').trim()
+                || (userRecord?.displayName || '').trim()
+                || (authUser?.displayName || '').trim()
+                || 'User';
+        }
+
+        // Initialize Firebase first
+        if (typeof initializeFirebase !== 'undefined') {
+            initializeFirebase();
+        }
+
+        // Prevent showing cached protected page after logout when user presses browser back
+        window.addEventListener('pageshow', (event) => {
+            const navEntry = performance.getEntriesByType('navigation')[0];
+            const isBackForward = event.persisted || (navEntry && navEntry.type === 'back_forward');
+            if (isBackForward) {
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (!user) {
+                        window.location.replace('auth_login.html');
+                    }
+                });
+            }
+        });
+
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            firebase.auth().onAuthStateChanged(async (user) => {
+                if (!user) {
+                    window.location.href = 'auth_login.html';
+                    return;
+                }
+
+                await loadUserProfile(user);
+                await loadUserStats(user.uid);
+            });
+        });
+
+        // Load user profile
+        async function loadUserProfile(user) {
+            try {
+                console.log('Loading profile for:', user.email);
+                
+                // Load additional user data from Firestore FIRST
+                const db = firebase.firestore();
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                // Get display name from Firestore or Firebase auth
+                let displayName = getDisplayName(null, user);
+                if (userDoc.exists) {
+                    currentUserData = userDoc.data();
+                    displayName = getDisplayName(currentUserData, user);
+                } else {
+                    currentUserData = {};
+                }
+                
+                // Set sidebar info with name from Firestore
+                document.getElementById('sidebarName').textContent = displayName;
+                document.getElementById('sidebarEmail').textContent = user.email;
+                document.getElementById('sidebarAvatar').textContent = displayName[0].toUpperCase();
+
+                // Set profile info with name from Firestore
+                document.getElementById('profileName').textContent = displayName;
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('profileAvatar').textContent = displayName[0].toUpperCase();
+
+                // Email verification status
+                document.getElementById('emailVerified').textContent = user.emailVerified ? 'Verified' : 'Not Verified';
+                document.getElementById('emailVerified').className = user.emailVerified ? 'verified-yes' : 'verified-no';
+
+                // Join date
+                const joinDate = user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unknown';
+                document.getElementById('joinedDate').textContent = joinDate;
+
+                // Load additional user data from Firestore
+                if (userDoc.exists) {
+                    document.getElementById('displayName').value = currentUserData.fullName || currentUserData.displayName || displayName || '';
+                    document.getElementById('phone').value = currentUserData.phone || '';
+                    document.getElementById('bio').value = currentUserData.bio || '';
+                    document.getElementById('skills').value = currentUserData.skills ? currentUserData.skills.join(', ') : '';
+                } else {
+                    // Set default values
+                    document.getElementById('displayName').value = displayName || '';
+                }
+
+                console.log('Profile loaded successfully');
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                // Don't alert, just log - user can still see basic info
+                console.warn('Could not load extended profile data from Firestore');
+            }
+        }
+
+        // Load user statistics
+        async function loadUserStats(userId) {
+            try {
+                const db = firebase.firestore();
+                const interviews = await db.collection('interviews')
+                    .where('userId', '==', userId)
+                    .get();
+
+                const total = interviews.size;
+                const completed = interviews.docs.filter(doc => doc.data().status === 'completed').length;
+                
+                let totalScore = 0;
+                let scoreCount = 0;
+                interviews.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (data.status === 'completed' && data.score !== undefined) {
+                        totalScore += data.score;
+                        scoreCount++;
+                    }
+                });
+
+                const avgScore = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 0;
+
+                document.getElementById('totalInterviews').textContent = total;
+                document.getElementById('completedInterviews').textContent = completed;
+                document.getElementById('avgScore').textContent = avgScore + '%';
+
+                console.log('Stats loaded:', { total, completed, avgScore });
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // Set default values on error
+                document.getElementById('totalInterviews').textContent = '0';
+                document.getElementById('completedInterviews').textContent = '0';
+                document.getElementById('avgScore').textContent = '0%';
+            }
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            isEditMode = true;
+            document.getElementById('displayName').disabled = false;
+            document.getElementById('phone').disabled = false;
+            document.getElementById('bio').disabled = false;
+            document.getElementById('skills').disabled = false;
+            document.getElementById('editActions').classList.remove('hidden');
+            document.getElementById('editBtn').classList.add('hidden');
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            isEditMode = false;
+            document.getElementById('displayName').disabled = true;
+            document.getElementById('phone').disabled = true;
+            document.getElementById('bio').disabled = true;
+            document.getElementById('skills').disabled = true;
+            document.getElementById('editActions').classList.add('hidden');
+            document.getElementById('editBtn').classList.remove('hidden');
+
+            // Reset form
+            const user = firebase.auth().currentUser;
+            if (currentUserData) {
+                document.getElementById('displayName').value = currentUserData.displayName || (user ? user.displayName : '') || '';
+                document.getElementById('phone').value = currentUserData.phone || '';
+                document.getElementById('bio').value = currentUserData.bio || '';
+                document.getElementById('skills').value = currentUserData.skills ? currentUserData.skills.join(', ') : '';
+            } else if (user) {
+                // Fallback to auth data if Firestore data not available
+                document.getElementById('displayName').value = user.displayName || '';
+            }
+        }
+
+        // Save profile changes
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert('Please log in first');
+                return;
+            }
+
+            const displayName = document.getElementById('displayName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const skillsText = document.getElementById('skills').value.trim();
+            const skills = skillsText ? skillsText.split(',').map(s => s.trim()).filter(s => s) : [];
+            const nameParts = splitFullName(displayName);
+
+            if (!displayName) {
+                alert('Please enter your name');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Update auth profile
+                await user.updateProfile({
+                    displayName: displayName
+                });
+
+                // Update Firestore
+                const db = firebase.firestore();
+                await db.collection('users').doc(user.uid).set({
+                    displayName: nameParts.fullName,
+                    fullName: nameParts.fullName,
+                    firstName: nameParts.firstName,
+                    lastName: nameParts.lastName,
+                    phone,
+                    bio,
+                    skills,
+                    email: user.email,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                alert('Profile updated successfully!');
+                await loadUserProfile(user);
+                cancelEdit();
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Failed to update profile: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Change password
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill all password fields');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('New password must be at least 6 characters');
+                return;
+            }
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert('Please log in first');
+                return;
+            }
+            
+            showLoading(true);
+
+            try {
+                // Reauthenticate user
+                const credential = firebase.auth.EmailAuthProvider.credential(
+                    user.email,
+                    currentPassword
+                );
+                await user.reauthenticateWithCredential(credential);
+
+                // Update password
+                await user.updatePassword(newPassword);
+
+                alert('Password updated successfully!');
+                document.getElementById('passwordForm').reset();
+            } catch (error) {
+                console.error('Error changing password:', error);
+                if (error.code === 'auth/wrong-password') {
+                    alert('Current password is incorrect');
+                } else {
+                    alert('Failed to change password: ' + error.message);
+                }
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Upload photo
+        function uploadPhoto() {
+            document.getElementById('photoInput').click();
+        }
+
+        // Handle photo upload
+        async function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size should be less than 5MB');
+                return;
+            }
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert('Please log in first');
+                return;
+            }
+            
+            showLoading(true);
+
+            try {
+                // Read file as data URL for preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'profile-img';
+                    document.getElementById('profileAvatar').innerHTML = '';
+                    document.getElementById('profileAvatar').appendChild(img);
+                };
+                reader.readAsDataURL(file);
+
+                // In a real app, you would upload to Firebase Storage here
+                // For now, we'll just show the preview
+                alert('Profile photo updated! (Note: Photo storage requires Firebase Storage configuration)');
+                
+                console.log('Photo selected:', file.name);
+            } catch (error) {
+                console.error('Error uploading photo:', error);
+                alert('Failed to upload photo: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Delete account
+        async function deleteAccount() {
+            const confirmed = await sisConfirm('Are you sure you want to delete your account?\n\nThis action cannot be undone. All your interview history and data will be permanently deleted.', {
+                title: 'Delete Account',
+                okText: 'Yes, Delete',
+                cancelText: 'Cancel',
+                variant: 'danger'
+            });
+            
+            if (!confirmed) return;
+
+            const doubleConfirm = await sisPrompt('Type "DELETE" to confirm account deletion:', {
+                title: 'Final Confirmation',
+                okText: 'Confirm',
+                cancelText: 'Cancel',
+                placeholder: 'Type DELETE'
+            });
+            if (doubleConfirm !== 'DELETE') {
+                alert('Account deletion cancelled');
+                return;
+            }
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert('Please log in first');
+                return;
+            }
+            
+            showLoading(true);
+
+            try {
+                const db = firebase.firestore();
+                
+                // Delete user data from Firestore
+                await db.collection('users').doc(user.uid).delete();
+                
+                // Delete all interviews
+                const interviews = await db.collection('interviews').where('userId', '==', user.uid).get();
+                const batch = db.batch();
+                interviews.docs.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+
+                // Delete user account
+                await user.delete();
+
+                alert('Account deleted successfully');
+                window.location.href = 'landingpage.html';
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                alert('Failed to delete account: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        // Show/hide loading
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+        }
+
+        // Logout
+        async function logout() {
+            const shouldLogout = await sisConfirm('Are you sure you want to logout?', {
+                title: 'Confirm Logout',
+                okText: 'Logout',
+                cancelText: 'Stay Logged In',
+                variant: 'danger'
+            });
+
+            if (!shouldLogout) {
+                return;
+            }
+
+            firebase.auth().signOut()
+                .then(() => {
+                    window.location.replace('landingpage.html');
+                })
+                .catch(() => {
+                    window.location.replace('landingpage.html');
+                });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+

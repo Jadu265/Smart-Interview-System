@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Results - Smart Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- jsPDF for PDF Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="theme.js"></script>
+    <script src="ui-dialogs.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260413">
+</head>
+<body class="c1 result-shell">
+    <div class="c246">
+        <div class="c102">
+            <!-- Header -->
+            <div class="c190">
+                <div class="c191">
+                    <div class="c192">
+                        <span class="c193 material-symbols-outlined">psychology</span>
+                    </div>
+                    <h1 class="c194">Interview Completed!</h1>
+                </div>
+            </div>
+
+            <!-- Score Card -->
+            <div class="c247">
+                <h2 class="c248">Your Score</h2>
+                <div class="c249">
+                    <div class="c250">
+                        <canvas id="scoreChart"></canvas>
+                        <div class="c251">
+                            <div class="c67">
+                                <p class="c252" id="scorePercentage">0%</p>
+                                <p class="c253">Score</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="c254" id="scoreMessage">Loading results...</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="c28">
+                <div class="c255">
+                    <span class="c150 material-symbols-outlined">check_circle</span>
+                    <h3 class="c223" id="correctAnswers">0</h3>
+                    <p class="c32">Correct</p>
+                </div>
+
+                <div class="c255">
+                    <span class="c153 material-symbols-outlined">cancel</span>
+                    <h3 class="c223" id="wrongAnswers">0</h3>
+                    <p class="c32">Wrong</p>
+                </div>
+
+                <div class="c255">
+                    <span class="c152 material-symbols-outlined">schedule</span>
+                    <h3 class="c223"><span id="timeTaken">0</span> min</h3>
+                    <p class="c32">Time Taken</p>
+                </div>
+
+                <div class="c255">
+                    <span class="c256 material-symbols-outlined">emoji_events</span>
+                    <h3 class="c223" id="totalPoints">0/0</h3>
+                    <p class="c32">Points</p>
+                </div>
+            </div>
+
+            <!-- Interview Details -->
+            <div class="c257">
+                <h3 class="c44">Interview Details</h3>
+                <div class="c258">
+                    <div>
+                        <p class="c32">Role</p>
+                        <p class="c119" id="interviewRole">-</p>
+                    </div>
+                    <div>
+                        <p class="c32">Difficulty</p>
+                        <p class="c119" id="interviewDifficulty">-</p>
+                    </div>
+                    <div>
+                        <p class="c32">Mode</p>
+                        <p class="c119" id="interviewMode">-</p>
+                    </div>
+                    <div>
+                        <p class="c32">Date</p>
+                        <p class="c119" id="interviewDate">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Review -->
+            <div class="c257">
+                <h3 class="c44">Answer Review</h3>
+                <div id="answerReview" class="c124">
+                    <p class="c259">Loading answers...</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="c260">
+                <button onclick="downloadPDF()" class="c261">
+                    <span class="material-symbols-outlined">download</span>
+                    Download PDF
+                </button>
+                <button onclick="window.location.href='auth_dashboard.html'" class="c262">
+                    Back to Dashboard
+                </button>
+                <button onclick="window.location.href='auth_interview_setup.html'" class="c128">
+                    Start New Interview
+                </button>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="c29">
+                <h3 class="c263">Rate Your Experience</h3>
+                <div class="c264">
+                    <div class="c265" id="starRating">
+                        <span class="c266 material-symbols-outlined" onclick="setRating(1)">star</span>
+                        <span class="c266 material-symbols-outlined" onclick="setRating(2)">star</span>
+                        <span class="c266 material-symbols-outlined" onclick="setRating(3)">star</span>
+                        <span class="c266 material-symbols-outlined" onclick="setRating(4)">star</span>
+                        <span class="c266 material-symbols-outlined" onclick="setRating(5)">star</span>
+                    </div>
+                    <p class="c267">How was your interview experience?</p>
+                    <textarea id="feedbackText" placeholder="Share your feedback (optional)..." class="c268" rows="3"></textarea>
+                    <button onclick="submitFeedback()" class="c269">
+                        Submit Feedback
+                    </button>
+                    <p id="feedbackMessage" class="c270"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_NEW_API_KEY_HERE",
+            authDomain: "smartinterview-d2ef2.firebaseapp.com",
+            projectId: "smartinterview-d2ef2",
+            storageBucket: "smartinterview-d2ef2.firebasestorage.app",
+            messagingSenderId: "889760323914",
+            appId: "1:889760323914:web:83b0166175be22c32049b3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let sessionId = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        sessionId = urlParams.get('session');
+
+        if (!sessionId) {
+            sessionId = sessionStorage.getItem('activeInterviewSessionId') || localStorage.getItem('activeInterviewSessionId');
+        }
+
+        if (sessionId) {
+            sessionStorage.setItem('activeInterviewSessionId', sessionId);
+            localStorage.setItem('activeInterviewSessionId', sessionId);
+        }
+
+        if (!sessionId) {
+            sisAlert('No interview session found', { title: 'Session Missing' }).then(() => {
+                window.location.href = 'auth_dashboard.html';
+            });
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'auth_login.html';
+                return;
+            }
+            await loadResults();
+        });
+
+        async function loadResults() {
+            try {
+                const doc = await db.collection('interviews').doc(sessionId).get();
+                
+                if (!doc.exists) {
+                    await sisAlert('Results not found', { title: 'Not Found' });
+                    window.location.href = 'auth_dashboard.html';
+                    return;
+                }
+
+                const data = doc.data();
+                
+                // Security check - ensure user can only view their own results
+                if (data.userId !== auth.currentUser.uid) {
+                    await sisAlert('Unauthorized access. You can only view your own interview results.', { title: 'Access Denied', variant: 'danger' });
+                    window.location.href = 'auth_dashboard.html';
+                    return;
+                }
+                
+                // Display score
+                const scorePercentage = data.scorePercentage || 0;
+                document.getElementById('scorePercentage').textContent = scorePercentage + '%';
+                
+                // Score message
+                let message = '';
+                if (scorePercentage >= 80) {
+                    message = 'Excellent! You did great!';
+                } else if (scorePercentage >= 60) {
+                    message = 'Good job! Keep practicing!';
+                } else if (scorePercentage >= 40) {
+                    message = 'Not bad! More practice needed.';
+                } else {
+                    message = 'Keep learning! You can do better!';
+                }
+                document.getElementById('scoreMessage').textContent = message;
+
+                // Create score chart
+                createScoreChart(scorePercentage);
+
+                // Stats
+                const correct = data.answers ? data.answers.filter(a => a.isCorrect).length : 0;
+                const wrong = data.answers ? data.answers.filter(a => !a.isCorrect).length : 0;
+                
+                document.getElementById('correctAnswers').textContent = correct;
+                document.getElementById('wrongAnswers').textContent = wrong;
+                document.getElementById('timeTaken').textContent = data.timeTaken || 0;
+                document.getElementById('totalPoints').textContent = `${data.score || 0}/${data.totalScore || 0}`;
+
+                // Interview details
+                document.getElementById('interviewRole').textContent = data.role;
+                document.getElementById('interviewDifficulty').textContent = 
+                    data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1);
+                document.getElementById('interviewMode').textContent = 
+                    data.mode.charAt(0).toUpperCase() + data.mode.slice(1);
+                
+                const date = data.completedAt ? new Date(data.completedAt).toLocaleDateString() : 'N/A';
+                document.getElementById('interviewDate').textContent = date;
+
+                // Display answer review
+                displayAnswerReview(data.answers || []);
+
+            } catch (error) {
+                console.error('Error loading results:', error);
+                alert('Failed to load results: ' + error.message);
+            }
+        }
+
+        function createScoreChart(percentage) {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: ['#ffffff', 'rgba(255,255,255,0.2)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                }
+            });
+        }
+
+        function displayAnswerReview(answers) {
+            const container = document.getElementById('answerReview');
+            
+            if (answers.length === 0) {
+                container.innerHTML = '<p class="c271">No answers to review</p>';
+                return;
+            }
+
+            container.innerHTML = answers.map((answer, index) => {
+                const cardState = answer.isCorrect ? 'ans-ok' : 'ans-bad';
+                const icon = answer.isCorrect ? 'check_circle' : 'cancel';
+                const iconState = answer.isCorrect ? 'ans-icon-ok' : 'ans-icon-bad';
+
+                return `
+                    <div class="c272 ${cardState}">
+                        <div class="c273">
+                            <span class="c274 material-symbols-outlined ${iconState}">${icon}</span>
+                            <div class="c76">
+                                <h4 class="c275">Question ${index + 1}</h4>
+                                <p class="c276">${answer.question}</p>
+                                
+                                <div class="c277">
+                                    <div>
+                                        <p class="c278">Your Answer:</p>
+                                        <p class="c7">${answer.userAnswer || 'No answer'}</p>
+                                    </div>
+                                    ${answer.type === 'mcq' ? `
+                                    <div>
+                                        <p class="c278">Correct Answer:</p>
+                                        <p class="c279">${answer.correctAnswer}</p>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <div class="c280">
+                                    <p class="c201">${answer.feedback}</p>
+                                </div>
+                                
+                                <p class="c180">Score: ${answer.score}/${answer.maxScore} points</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        let currentRating = 0;
+
+        function setRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('#starRating span');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = '#eab308';
+                } else {
+                    star.style.color = '#475569';
+                }
+            });
+        }
+
+        async function submitFeedback() {
+            if (currentRating === 0) {
+                document.getElementById('feedbackMessage').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Please select a rating';
+                document.getElementById('feedbackMessage').className = 'feedback-warn';
+                return;
+            }
+
+            const feedbackText = document.getElementById('feedbackText').value;
+            const sessionId = new URLSearchParams(window.location.search).get('session');
+
+            try {
+                await db.collection('interviews').doc(sessionId).update({
+                    feedback: {
+                        rating: currentRating,
+                        comment: feedbackText,
+                        submittedAt: new Date().toISOString()
+                    }
+                });
+
+                document.getElementById('feedbackMessage').innerHTML = '<i class="fa-solid fa-circle-check"></i> Thank you for your feedback!';
+                document.getElementById('feedbackMessage').className = 'feedback-ok';
+                
+                document.querySelectorAll('#starRating span').forEach(star => star.style.pointerEvents = 'none');
+                document.getElementById('feedbackText').disabled = true;
+                document.querySelector('button[onclick="submitFeedback()"]').disabled = true;
+            } catch (error) {
+                document.getElementById('feedbackMessage').innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Failed to submit feedback';
+                document.getElementById('feedbackMessage').className = 'feedback-bad';
+            }
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Smart Interview System', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(16);
+            doc.text('Interview Result Report', 105, 30, { align: 'center' });
+
+            doc.setLineWidth(0.5);
+            doc.line(20, 35, 190, 35);
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Interview Details:', 20, 45);
+            
+            doc.setFont('helvetica', 'normal');
+            const role = document.getElementById('interviewRole').textContent;
+            const difficulty = document.getElementById('interviewDifficulty').textContent;
+            const mode = document.getElementById('interviewMode').textContent;
+            const date = document.getElementById('interviewDate').textContent;
+            
+            doc.text(`Role: ${role}`, 20, 55);
+            doc.text(`Difficulty: ${difficulty}`, 20, 62);
+            doc.text(`Mode: ${mode}`, 20, 69);
+            doc.text(`Date: ${date}`, 20, 76);
+
+            doc.setFont('helvetica', 'bold');
+            doc.text('Performance:', 20, 90);
+            
+            doc.setFontSize(24);
+            doc.setTextColor(33, 150, 243);
+            const score = document.getElementById('scorePercentage').textContent;
+            doc.text(score, 20, 105);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont('helvetica', 'normal');
+            const correct = document.getElementById('correctAnswers').textContent;
+            const wrong = document.getElementById('wrongAnswers').textContent;
+            const points = document.getElementById('totalPoints').textContent;
+            const time = document.getElementById('timeTaken').textContent;
+            
+            doc.text(`Correct Answers: ${correct}`, 20, 115);
+            doc.text(`Wrong Answers: ${wrong}`, 20, 122);
+            doc.text(`Points: ${points}`, 20, 129);
+            doc.text(`Time Taken: ${time} min`, 20, 136);
+
+            doc.setFontSize(10);
+            doc.setTextColor(128, 128, 128);
+            doc.text('Generated by Smart Interview System', 105, 280, { align: 'center' });
+            doc.text(new Date().toLocaleString(), 105, 285, { align: 'center' });
+
+            doc.save(`Interview_Result_${role.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+        }
+
+        console.log('Results page loaded');
+    </script>
+</body>
+</html>
+
+
+
+
+
